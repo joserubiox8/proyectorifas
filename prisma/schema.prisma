@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Affiliate {
+  id        String   @id @default(cuid())
+  name      String
+  idNumber  String   @unique // Cédula (used as password)
+  whatsapp  String   @unique // WhatsApp (used as username)
+  bank      String
+  account   String
+  refCode   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Raffle {
+  id           String   @id @default(cuid())
+  name         String
+  price        Float
+  commissionPct Float   @default(20) // 20% commission
+  status       String   @default("ACTIVE") // ACTIVE, CLOSED, CANCELLED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  tickets      Ticket[]
+  secondaryPool SecondaryNumberPool[]
+}
+
+model Ticket {
+  id          String    @id @default(cuid())
+  number      String    // "00" to "99"
+  status      String    @default("AVAILABLE") // AVAILABLE, RESERVED, SOLD
+  expiresAt   DateTime?
+  raffleId    String
+  raffle      Raffle    @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  orderId     String?
+  order       Order?    @relation(fields: [orderId], references: [id])
+  secondaries SecondaryTicket[]
+
+  @@unique([raffleId, number])
+}
+
+model SecondaryNumberPool {
+  id        String  @id @default(cuid())
+  number    String  // "000" to "999"
+  isUsed    Boolean @default(false)
+  raffleId  String
+  raffle    Raffle  @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+
+  @@unique([raffleId, number])
+}
+
+model SecondaryTicket {
+  id        String @id @default(cuid())
+  number    String // "000" to "999"
+  ticketId  String
+  ticket    Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id           String     @id @default(cuid())
+  customerName String
+  customerPhone String
+  receiptCode  String     @unique // 4 digit alphanumeric code
+  status       String     @default("PENDING") // PENDING, APPROVED, REJECTED
+  totalAmount  Float
+  affiliateId  String?
+  affiliate    Affiliate? @relation(fields: [affiliateId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  tickets      Ticket[]
+}
