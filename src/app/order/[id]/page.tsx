@@ -24,9 +24,12 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
   const message = `Hola, mi nombre es ${order.customerName} y reservé los números ${numbers}. Mis números adicionales son: ${secondaryNumbersList}. Mi comprobante es ${order.receiptCode}`
   const encodedMessage = encodeURIComponent(message)
   
-  // Replace with the actual WhatsApp number of the admin
-  const adminWhatsApp = '573000000000' 
+  // Use environment variables for admin contact
+  const adminWhatsApp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '573000000000' 
   const waLink = `https://wa.me/${adminWhatsApp}?text=${encodedMessage}`
+
+  const nequi = process.env.NEXT_PUBLIC_NEQUI || '300 000 0000'
+  const bancolombia = process.env.NEXT_PUBLIC_BANCOLOMBIA_AHORROS || '123-456789-00'
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 flex items-center justify-center">
@@ -72,8 +75,8 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
             <div className="bg-blue-50 text-blue-900 p-4 rounded-xl text-sm space-y-2">
               <p>1. Realiza la transferencia a cualquiera de estas cuentas:</p>
               <ul className="list-disc pl-5 font-medium">
-                <li>Nequi: 300 000 0000</li>
-                <li>Bancolombia (Ahorros): 123-456789-00</li>
+                <li>Nequi: {nequi}</li>
+                <li>Bancolombia (Ahorros): {bancolombia}</li>
               </ul>
               <p>2. Guarda el comprobante de la transferencia.</p>
               <p>3. Envíanos el comprobante por WhatsApp presionando el botón abajo.</p>
