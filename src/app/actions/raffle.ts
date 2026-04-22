@@ -53,3 +53,33 @@ export async function getActiveRaffle() {
     }
   })
 }
+
+export async function deleteRaffle(id: string) {
+  try {
+    await prisma.raffle.delete({
+      where: { id }
+    })
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting raffle:', error)
+    return { success: false, error: 'Error al eliminar la rifa.' }
+  }
+}
+
+export async function updateRaffleName(id: string, name: string) {
+  if (!name.trim()) return { success: false, error: 'El nombre no puede estar vacío.' }
+  try {
+    await prisma.raffle.update({
+      where: { id },
+      data: { name }
+    })
+    revalidatePath('/')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating raffle name:', error)
+    return { success: false, error: 'Error al actualizar el nombre.' }
+  }
+}

@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { approveOrder, cancelOrder } from '@/app/actions/approval'
-import { createRaffle } from '@/app/actions/raffle'
-import { createAffiliate } from '@/app/actions/affiliate'
+import { createRaffle, deleteRaffle, updateRaffleName } from '@/app/actions/raffle'
+import { createAffiliate, deleteAffiliate, toggleCommissionPaid } from '@/app/actions/affiliate'
 
-export default function AdminActions({ action, id }: { action: string, id?: string }) {
+export default function AdminActions({ action, id, isPaid }: { action: string, id?: string, isPaid?: boolean }) {
   const [loading, setLoading] = useState(false)
 
   const handleApprove = async () => {
@@ -46,6 +46,25 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
     setLoading(false)
   }
 
+  const handleDeleteRaffle = async () => {
+    if (!id || !confirm('¿Estás seguro de ELIMINAR esta rifa por completo? Esta acción es irreversible y borrará los números generados.')) return
+    setLoading(true)
+    const res = await deleteRaffle(id)
+    if (!res.success) alert(res.error)
+    setLoading(false)
+  }
+
+  const handleEditRaffleName = async () => {
+    if (!id) return
+    const newName = prompt('Ingresa el nuevo nombre para la rifa:')
+    if (!newName) return
+    setLoading(true)
+    const res = await updateRaffleName(id, newName)
+    if (!res.success) alert(res.error)
+    setLoading(false)
+  }
+
+
   const [affName, setAffName] = useState('')
   const [affWA, setAffWA] = useState('')
   const [affID, setAffID] = useState('')
@@ -67,6 +86,22 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
     } else {
       alert(res.error)
     }
+    setLoading(false)
+  }
+
+  const handleDeleteAffiliate = async () => {
+    if (!id || !confirm('¿Estás seguro de ELIMINAR este afiliado? Sus ventas se mantendrán pero perderán el vínculo.')) return
+    setLoading(true)
+    const res = await deleteAffiliate(id)
+    if (!res.success) alert(res.error)
+    setLoading(false)
+  }
+
+  const handleToggleCommission = async () => {
+    if (!id || isPaid === undefined) return
+    setLoading(true)
+    const res = await toggleCommissionPaid(id, !isPaid)
+    if (!res.success) alert(res.error)
     setLoading(false)
   }
 
@@ -107,6 +142,31 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
     )
   }
 
+  if (action === 'delete-raffle') {
+    return (
+      <button 
+        onClick={handleDeleteRaffle}
+        disabled={loading}
+        className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-50 transition-colors"
+      >
+        {loading ? '...' : 'Eliminar Rifa'}
+      </button>
+    )
+  }
+
+  if (action === 'edit-raffle-name') {
+    return (
+      <button 
+        onClick={handleEditRaffleName}
+        disabled={loading}
+        className="text-gray-400 hover:text-gray-800 transition-colors ml-2"
+        title="Editar nombre"
+      >
+        ✏️
+      </button>
+    )
+  }
+
   if (action === 'create-affiliate') {
     return (
       <form onSubmit={handleCreateAffiliate} className="space-y-3 text-sm">
@@ -139,6 +199,36 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
           {loading ? 'Registrando...' : 'Registrar Afiliado'}
         </button>
       </form>
+    )
+  }
+
+  if (action === 'delete-affiliate') {
+    return (
+      <button 
+        onClick={handleDeleteAffiliate}
+        disabled={loading}
+        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors"
+        title="Eliminar Afiliado"
+      >
+        🗑️
+      </button>
+    )
+  }
+
+  if (action === 'toggle-commission') {
+    return (
+      <button 
+        onClick={handleToggleCommission}
+        disabled={loading}
+        className={`text-xs px-2 py-1 rounded font-bold transition-colors ${
+          isPaid 
+            ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+        }`}
+        title={isPaid ? "Marcar como pendiente" : "Marcar como pagada"}
+      >
+        {loading ? '...' : isPaid ? '✅ Pagada' : '⏳ Pendiente'}
+      </button>
     )
   }
 

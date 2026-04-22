@@ -54,6 +54,17 @@ export default async function AffiliateDashboard() {
           </form>
         </div>
 
+        {/* Onboarding Instructions */}
+        <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+          <h2 className="text-blue-900 font-bold text-lg mb-2">🚀 ¿Cómo empezar a ganar?</h2>
+          <div className="text-blue-800 text-sm space-y-2">
+            <p>1. <strong>Comparte tu enlace:</strong> Copia tu enlace personalizado de abajo y compártelo por WhatsApp, Facebook o Instagram.</p>
+            <p>2. <strong>Tus clientes compran:</strong> Cuando alguien compra usando tu enlace, el sistema registra la venta a tu nombre.</p>
+            <p>3. <strong>Pídeles el comprobante:</strong> Asegúrate de que tus clientes envíen el comprobante de pago al administrador.</p>
+            <p>4. <strong>Gana comisiones:</strong> Una vez que la venta sea aprobada, verás tu comisión reflejada aquí mismo.</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <h3 className="text-gray-500 text-sm font-medium mb-1">Ventas Totales</h3>

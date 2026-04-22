@@ -52,6 +52,14 @@ export default async function AdminAffiliates() {
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 md:col-span-1 h-fit">
             <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Registrar Nuevo Afiliado</h3>
             <AdminActions action="create-affiliate" />
+            
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <h3 className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Enlace de Auto-Registro</h3>
+              <p className="text-xs text-gray-500 mb-3">Comparte este enlace para que los afiliados se registren por sí mismos:</p>
+              <div className="bg-gray-50 p-2 rounded border border-gray-200 text-xs font-mono overflow-x-auto select-all">
+                https://tusitio.com/afiliados/registro
+              </div>
+            </div>
           </div>
           
           {/* Affiliates List */}
@@ -85,8 +93,11 @@ export default async function AdminAffiliates() {
 
                   return (
                     <div key={aff.id} className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                      <div>
-                        <div className="font-bold text-lg text-gray-900">{aff.name}</div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="font-bold text-lg text-gray-900">{aff.name}</div>
+                          <AdminActions action="delete-affiliate" id={aff.id} />
+                        </div>
                         <div className="text-sm text-gray-500 mb-2">
                           <span className="font-medium text-gray-700">WhatsApp:</span> {aff.whatsapp} | <span className="font-medium text-gray-700">Cédula:</span> {aff.idNumber}
                         </div>
@@ -101,12 +112,28 @@ export default async function AdminAffiliates() {
                           {soldTickets.length}
                         </div>
                         {soldTickets.length > 0 ? (
-                          <div className="flex flex-wrap sm:justify-end gap-1 max-w-[200px]">
-                            {soldTickets.map(num => (
-                              <span key={num} className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 font-mono text-gray-600">
-                                {num}
-                              </span>
-                            ))}
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-wrap sm:justify-end gap-1 max-w-[200px] mb-2">
+                              {soldTickets.map(num => (
+                                <span key={num} className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 font-mono text-gray-600">
+                                  {num}
+                                </span>
+                              ))}
+                            </div>
+                            
+                            {/* Comisiones por Orden */}
+                            <div className="space-y-2 mt-2 pt-2 border-t border-gray-100">
+                              <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1 text-left">Control de Comisiones</div>
+                              {aff.orders.filter(o => o.tickets.length > 0).map(order => (
+                                <div key={order.id} className="flex justify-between items-center bg-gray-50 p-1.5 rounded border border-gray-100">
+                                  <div className="text-left">
+                                    <div className="text-xs font-bold font-mono text-gray-700">{order.receiptCode}</div>
+                                    <div className="text-[10px] text-gray-500">{order.tickets.map(t=>t.number).join(', ')}</div>
+                                  </div>
+                                  <AdminActions action="toggle-commission" id={order.id} isPaid={order.commissionPaid} />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         ) : (
                           <div className="text-xs text-gray-400 italic">Sin ventas aún</div>

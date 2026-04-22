@@ -64,27 +64,25 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
           </form>
         </div>
 
-        {/* Search Bar */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h2 className="text-lg font-bold text-gray-700">Buscar</h2>
-            <AdminSearch />
-          </div>
-        </div>
-
         {/* Create Raffle or Status */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
           {activeRaffle ? (
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl font-bold">Rifa Activa: {activeRaffle.name}</h2>
+                <h2 className="text-xl font-bold flex items-center">
+                  Rifa Activa: {activeRaffle.name}
+                  <AdminActions action="edit-raffle-name" id={activeRaffle.id} />
+                </h2>
                 <p className="text-gray-500">Precio: {activeRaffle.price.toLocaleString()} COP | Comisión: {activeRaffle.commissionPct}%</p>
                 <div className="mt-2 text-sm">
                   <span className="font-medium">Números Vendidos: </span> 
                   {activeRaffle.tickets.filter(t => t.status === 'SOLD').length} / 100
                 </div>
               </div>
-              <AdminActions action="close-raffle" id={activeRaffle.id} />
+              <div className="flex gap-2">
+                <AdminActions action="close-raffle" id={activeRaffle.id} />
+                <AdminActions action="delete-raffle" id={activeRaffle.id} />
+              </div>
             </div>
           ) : (
             <div>
@@ -135,6 +133,14 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
         </div>
 
         {/* Removed Affiliates Management - Moved to /admin/afiliados */}
+
+        {/* Search Bar for Assigned Numbers */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h2 className="text-lg font-bold text-gray-700">Buscar Número/Cliente</h2>
+            <AdminSearch />
+          </div>
+        </div>
 
         {/* Sold Numbers & Secondaries */}
         {activeRaffle && (

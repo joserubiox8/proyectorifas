@@ -22,3 +22,30 @@ export async function createAffiliate(data: { name: string, whatsapp: string, id
     return { success: false, error: 'Error al crear afiliado. ¿Quizás el WhatsApp ya existe?' }
   }
 }
+
+export async function deleteAffiliate(id: string) {
+  try {
+    await prisma.affiliate.delete({
+      where: { id }
+    })
+    revalidatePath('/admin/afiliados')
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting affiliate:', error)
+    return { success: false, error: 'Error al eliminar el afiliado.' }
+  }
+}
+
+export async function toggleCommissionPaid(orderId: string, isPaid: boolean) {
+  try {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { commissionPaid: isPaid }
+    })
+    revalidatePath('/admin/afiliados')
+    return { success: true }
+  } catch (error) {
+    console.error('Error toggling commission:', error)
+    return { success: false, error: 'Error al actualizar el estado de la comisión.' }
+  }
+}
