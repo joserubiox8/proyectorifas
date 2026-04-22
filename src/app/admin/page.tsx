@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import AdminActions from './AdminActions'
 
 export const dynamic = 'force-dynamic'
@@ -13,7 +14,10 @@ export default async function AdminDashboard() {
     where: { status: 'ACTIVE' },
     include: {
       tickets: {
-        include: { secondaries: true }
+        include: { 
+          secondaries: true,
+          order: true 
+        }
       }
     }
   })
@@ -24,16 +28,17 @@ export default async function AdminDashboard() {
     orderBy: { createdAt: 'desc' }
   })
 
-  const affiliates = await prisma.affiliate.findMany()
-
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Header */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center">
-          <div>
+          <div className="flex items-center gap-6">
             <h1 className="text-2xl font-black text-gray-900">Panel Administrativo</h1>
+            <Link href="/admin/afiliados" className="text-blue-600 font-bold hover:underline">
+              Gestión de Afiliados
+            </Link>
           </div>
           <form action={async () => {
             'use server'
@@ -107,55 +112,40 @@ export default async function AdminDashboard() {
           )}
         </div>
 
-        {/* Affiliates Management */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold mb-4">Gestión de Afiliados</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Create Affiliate Form */}
-            <div className="md:col-span-1 border-r border-gray-100 pr-0 md:pr-6">
-              <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Registrar Nuevo</h3>
-              <AdminActions action="create-affiliate" />
-            </div>
-            
-            {/* Affiliates List */}
-            <div className="md:col-span-2">
-              <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Afiliados Actuales ({affiliates.length})</h3>
-              {affiliates.length === 0 ? (
-                <p className="text-gray-500 italic text-sm">No hay afiliados registrados.</p>
-              ) : (
-                <div className="space-y-3">
-                  {affiliates.map(aff => (
-                    <div key={aff.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
-                      <div>
-                        <div className="font-bold">{aff.name}</div>
-                        <div className="text-xs text-gray-500">{aff.whatsapp} | Cédula: {aff.idNumber}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs font-mono font-bold text-blue-600">ref={aff.refCode}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        {/* Removed Affiliates Management - Moved to /admin/afiliados */}
 
         {/* Sold Numbers & Secondaries */}
         {activeRaffle && (
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
             <h2 className="text-xl font-bold mb-4">Números Asignados</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {activeRaffle.tickets.filter(t => t.status === 'SOLD').map(ticket => (
-                <div key={ticket.id} className="border border-gray-200 rounded-xl p-3 bg-gray-50">
-                  <div className="font-black text-xl mb-1 text-red-600">{ticket.number}</div>
-                  <div className="text-xs text-gray-500 mb-2">Secundarios:</div>
-                  <div className="flex flex-wrap gap-1">
-                    {ticket.secondaries.map(sec => (
-                      <span key={sec.id} className="text-xs bg-white border border-gray-200 px-1 py-0.5 rounded font-mono">
-                        {sec.number}
-                      </span>
-                    ))}
+              {activeRaffle.tickets
+                .filter(t => t.status === 'SOLD')
+                .sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10))
+                .map(ticket => (
+                <div key={ticket.id} className="border border-gray-200 rounded-xl p-3 bg-gray-50 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-black text-2xl text-red-600 leading-none">{ticket.number}</span>
+                    </div>
+                    {ticket.order && (
+                      <div className="mb-3 text-sm bg-white p-2 border border-gray-100 rounded">
+                        <div className="font-bold text-gray-800 line-clamp-1" title={ticket.order.customerName}>
+                          {ticket.order.customerName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {ticket.order.customerPhone}
+                        </div>
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-500 mb-1">Secundarios:</div>
+                    <div className="flex flex-wrap gap-1">
+                      {ticket.secondaries.map(sec => (
+                        <span key={sec.id} className="text-[10px] bg-white border border-gray-200 px-1 py-0.5 rounded font-mono">
+                          {sec.number}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}

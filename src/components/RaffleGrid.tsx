@@ -179,8 +179,10 @@ export default function RaffleGrid({
             <input 
               type="tel" 
               required
+              maxLength={10}
+              pattern="[0-9]*"
               value={phone}
-              onChange={e => setPhone(e.target.value)}
+              onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               placeholder="3001234567"
             />
