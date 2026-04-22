@@ -3,10 +3,14 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import AdminActions from './AdminActions'
+import AdminSearch from '@/components/AdminSearch'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminDashboard() {
+export default async function AdminDashboard(props: { searchParams?: Promise<{ q?: string }> }) {
+  const params = await props.searchParams
+  const q = params?.q?.toLowerCase() || ''
+  
   const session = await getSession()
   if (!session || session.role !== 'ADMIN') redirect('/login')
 
@@ -22,11 +26,21 @@ export default async function AdminDashboard() {
     }
   })
 
-  const pendingOrders = await prisma.order.findMany({
+  let pendingOrders = await prisma.order.findMany({
     where: { status: 'PENDING' },
     include: { tickets: true, affiliate: true },
     orderBy: { createdAt: 'desc' }
   })
+
+  // Client-side filtering because there usually aren't thousands of pending orders
+  if (q) {
+    pendingOrders = pendingOrders.filter(o => 
+      o.customerName.toLowerCase().includes(q) || 
+      o.customerPhone.includes(q) || 
+      o.receiptCode.toLowerCase().includes(q) ||
+      o.tickets.some(t => t.number.includes(q))
+    )
+  }
 
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
@@ -48,6 +62,14 @@ export default async function AdminDashboard() {
           }}>
             <button className="text-red-500 font-medium hover:text-red-700">Cerrar Sesión</button>
           </form>
+        </div>
+
+        {/* Search Bar */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h2 className="text-lg font-bold text-gray-700">Buscar</h2>
+            <AdminSearch />
+          </div>
         </div>
 
         {/* Create Raffle or Status */}
@@ -121,6 +143,14 @@ export default async function AdminDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {activeRaffle.tickets
                 .filter(t => t.status === 'SOLD')
+                .filter(t => {
+                  if (!q) return true
+                  return (
+                    t.number.includes(q) || 
+                    (t.order?.customerName.toLowerCase().includes(q)) || 
+                    (t.order?.customerPhone.includes(q))
+                  )
+                })
                 .sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10))
                 .map(ticket => (
                 <div key={ticket.id} className="border border-gray-200 rounded-xl p-3 bg-gray-50 flex flex-col justify-between">
@@ -146,6 +176,9 @@ export default async function AdminDashboard() {
                         </span>
                       ))}
                     </div>
+                    {ticket.order && (
+                      <AdminActions action="cancel-order" id={ticket.order.id} />
+                    )}
                   </div>
                 </div>
               ))}

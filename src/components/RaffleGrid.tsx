@@ -29,9 +29,9 @@ export default function RaffleGrid({
   // Generate 00 to 99
   const gridNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'))
 
-  const handleSelect = (num: string, status: string, isExpired: boolean) => {
+  const handleSelect = (num: string, status: string) => {
     if (status === 'SOLD') return
-    if (status === 'RESERVED' && !isExpired) return
+    if (status === 'RESERVED') return
 
     if (selected.includes(num)) {
       setSelected(selected.filter(n => n !== num))
@@ -94,9 +94,8 @@ export default function RaffleGrid({
             let isSelected = selected.includes(num)
             
             if (ticket) {
-              const isExpired = ticket.expiresAt ? new Date(ticket.expiresAt) < now : true
               if (ticket.status === 'SOLD') isSold = true
-              if (ticket.status === 'RESERVED' && !isExpired) isReserved = true
+              if (ticket.status === 'RESERVED') isReserved = true
             }
 
             let bgClass = "bg-[#E9E5E0] hover:bg-gray-300 text-gray-800"
@@ -111,7 +110,7 @@ export default function RaffleGrid({
             return (
               <button
                 key={num}
-                onClick={() => handleSelect(num, ticket?.status || 'AVAILABLE', ticket?.expiresAt ? new Date(ticket.expiresAt) < now : true)}
+                onClick={() => handleSelect(num, ticket?.status || 'AVAILABLE')}
                 className={`
                   aspect-square rounded-lg flex items-center justify-center font-bold text-sm sm:text-lg 
                   transition-all duration-200
@@ -195,7 +194,7 @@ export default function RaffleGrid({
             {loading ? 'Procesando...' : 'Reservar y Pagar'}
           </button>
           <p className="text-xs text-center text-gray-500 mt-2">
-            Tus números se reservarán por 30 minutos.
+            Tus números quedarán reservados hasta que confirmemos tu pago.
           </p>
         </form>
       </div>

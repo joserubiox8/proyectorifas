@@ -47,7 +47,7 @@ export async function reserveTickets(data: {
           if (ticket.status === 'SOLD') {
             throw new Error(`El número ${num} ya fue vendido.`)
           }
-          if (ticket.status === 'RESERVED' && ticket.expiresAt && ticket.expiresAt > now) {
+          if (ticket.status === 'RESERVED') {
             throw new Error(`El número ${num} se encuentra reservado por otro usuario.`)
           }
         }
@@ -83,8 +83,8 @@ export async function reserveTickets(data: {
       })
 
       // Reserve the tickets
-      // If a ticket existed but was expired, we update it. If it didn't exist, we create it.
-      const expiresAt = new Date(Date.now() + 30 * 60 * 1000) // 30 minutes from now
+      // If a ticket existed but was expired/cancelled, we update it. If it didn't exist, we create it.
+      const expiresAt = null // Reservations are now permanent until cancelled
 
       for (const num of data.numbers) {
         const existing = existingTickets.find((t) => t.number === num)

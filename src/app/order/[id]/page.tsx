@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import DownloadButton from '@/components/DownloadButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,13 +34,16 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden">
-        <div className="bg-yellow-400 p-6 text-center">
-          <h1 className="text-2xl font-black text-yellow-900 mb-2">¡Reserva Exitosa!</h1>
-          <p className="text-yellow-800 text-sm">Tus números están reservados por 30 minutos.</p>
-        </div>
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col gap-4 bg-transparent shadow-none pb-8">
+        
+        {/* Receipt Card to Capture */}
+        <div id="receipt-card" className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+          <div className="bg-yellow-400 p-6 text-center">
+            <h1 className="text-2xl font-black text-yellow-900 mb-2">¡Reserva Exitosa!</h1>
+            <p className="text-yellow-800 text-sm">Transfiere ahora para asegurar tus números.</p>
+          </div>
 
-        <div className="p-6">
+          <div className="p-6 pb-2">
           <div className="mb-6 bg-gray-50 rounded-xl p-4 border border-gray-100">
             <div className="flex justify-between mb-2">
               <span className="text-gray-500">Comprobante</span>
@@ -81,8 +85,13 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
               <p>2. Guarda el comprobante de la transferencia.</p>
               <p>3. Envíanos el comprobante por WhatsApp presionando el botón abajo.</p>
             </div>
+            </div>
           </div>
+        </div>
 
+        <div className="px-1 flex flex-col gap-3">
+          <DownloadButton targetId="receipt-card" fileName={`Comprobante-${order.receiptCode}.png`} />
+          
           <a 
             href={waLink}
             target="_blank"
@@ -95,7 +104,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
             Enviar Comprobante
           </a>
 
-          <div className="mt-4 text-center">
+          <div className="mt-2 text-center">
              <Link href="/" className="text-gray-500 hover:text-gray-800 text-sm font-medium">
                Volver al inicio
              </Link>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { approveOrder } from '@/app/actions/approval'
+import { approveOrder, cancelOrder } from '@/app/actions/approval'
 import { createRaffle } from '@/app/actions/raffle'
 import { createAffiliate } from '@/app/actions/affiliate'
 
@@ -12,6 +12,16 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
     if (!id || !confirm('¿Estás seguro de aprobar este pago? Esto asignará los números secundarios.')) return
     setLoading(true)
     const res = await approveOrder(id)
+    if (!res.success) {
+      alert(res.error)
+    }
+    setLoading(false)
+  }
+
+  const handleCancel = async () => {
+    if (!id || !confirm('¿Estás seguro de cancelar esta venta? Esto liberará los números principales y secundarios asociados.')) return
+    setLoading(true)
+    const res = await cancelOrder(id)
     if (!res.success) {
       alert(res.error)
     }
@@ -68,6 +78,19 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-50 transition-colors shadow-sm shadow-green-200"
       >
         {loading ? 'Aprobando...' : 'Aprobar Pago'}
+      </button>
+    )
+  }
+
+  if (action === 'cancel-order') {
+    return (
+      <button 
+        onClick={handleCancel}
+        disabled={loading}
+        title="Cancelar venta y liberar números"
+        className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded font-bold transition-colors disabled:opacity-50 mt-2 w-full"
+      >
+        {loading ? '...' : 'Liberar Números'}
       </button>
     )
   }
