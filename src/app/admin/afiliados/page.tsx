@@ -19,12 +19,14 @@ export default async function AdminAffiliates() {
     include: {
       orders: {
         where: { 
-          status: 'APPROVED',
-          ...(activeRaffle ? { raffleId: activeRaffle.id } : {})
+          status: 'APPROVED'
         },
         include: {
           tickets: {
-            where: { status: 'SOLD' }
+            where: { 
+              status: 'SOLD',
+              ...(activeRaffle ? { raffleId: activeRaffle.id } : {})
+            }
           }
         }
       }
