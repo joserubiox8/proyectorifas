@@ -107,6 +107,40 @@ export default async function AdminDashboard() {
           )}
         </div>
 
+        {/* Affiliates Management */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <h2 className="text-xl font-bold mb-4">Gestión de Afiliados</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Create Affiliate Form */}
+            <div className="md:col-span-1 border-r border-gray-100 pr-0 md:pr-6">
+              <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Registrar Nuevo</h3>
+              <AdminActions action="create-affiliate" />
+            </div>
+            
+            {/* Affiliates List */}
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Afiliados Actuales ({affiliates.length})</h3>
+              {affiliates.length === 0 ? (
+                <p className="text-gray-500 italic text-sm">No hay afiliados registrados.</p>
+              ) : (
+                <div className="space-y-3">
+                  {affiliates.map(aff => (
+                    <div key={aff.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                      <div>
+                        <div className="font-bold">{aff.name}</div>
+                        <div className="text-xs text-gray-500">{aff.whatsapp} | Cédula: {aff.idNumber}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs font-mono font-bold text-blue-600">ref={aff.refCode}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Sold Numbers & Secondaries */}
         {activeRaffle && (
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
