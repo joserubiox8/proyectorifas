@@ -84,9 +84,6 @@ export default function AdminActions({ action, id }: { action: string, id?: stri
     )
   }
 
-    )
-  }
-
   if (action === 'create-affiliate') {
     return (
       <form onSubmit={handleCreateAffiliate} className="space-y-3 text-sm">
