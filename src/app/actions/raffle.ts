@@ -13,7 +13,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray
 }
 
-export async function createRaffle(data: { name: string, price: number, commissionPct: number }) {
+export async function createRaffle(data: { name: string, price: number, commissionPct: number, drawDate?: string }) {
   try {
     // Generate numbers 000 to 999
     const numbers = Array.from({ length: 1000 }, (_, i) => i.toString().padStart(3, '0'))
@@ -25,6 +25,7 @@ export async function createRaffle(data: { name: string, price: number, commissi
       data: {
         name: data.name,
         price: data.price,
+        drawDate: data.drawDate || null,
         commissionPct: data.commissionPct,
         status: 'ACTIVE',
         secondaryPool: {
@@ -56,9 +57,29 @@ export async function getActiveRaffle() {
 
 export async function deleteRaffle(id: string) {
   try {
+    // 1. Encontrar todas las órdenes/recibos asociados a esta rifa
+    const ordersToDelete = await prisma.order.findMany({
+      where: {
+        tickets: {
+          some: { raffleId: id }
+        }
+      },
+      select: { id: true }
+    })
+    
+    const orderIds = ordersToDelete.map(o => o.id)
+
+    // 2. Eliminar la rifa PRIMERO (limpia tickets y secondary pool por cascade para evitar errores de Foreign Key)
     await prisma.raffle.delete({
       where: { id }
     })
+
+    // 3. Eliminar los recibos huérfanos
+    if (orderIds.length > 0) {
+      await prisma.order.deleteMany({
+        where: { id: { in: orderIds } }
+      })
+    }
     revalidatePath('/')
     revalidatePath('/admin')
     return { success: true }

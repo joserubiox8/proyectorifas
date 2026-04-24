@@ -35,12 +35,14 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
     if (!priceStr) return
     const commStr = prompt('Porcentaje de comisión (%):', '20')
     if (!commStr) return
+    const drawDateStr = prompt('Fecha del sorteo (Opcional, ej. Sábado 25 de Octubre):', '')
 
     setLoading(true)
     const res = await createRaffle({
       name,
       price: parseInt(priceStr, 10),
-      commissionPct: parseInt(commStr, 10)
+      commissionPct: parseInt(commStr, 10),
+      drawDate: drawDateStr || undefined
     })
     if (!res.success) alert(res.error)
     setLoading(false)

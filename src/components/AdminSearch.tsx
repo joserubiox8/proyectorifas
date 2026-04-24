@@ -18,9 +18,12 @@ export default function AdminSearch() {
         params.delete('q')
       }
       
-      startTransition(() => {
-        router.replace(`?${params.toString()}`, { scroll: false })
-      })
+      const currentQ = searchParams?.get('q') || ''
+      if (currentQ !== query) {
+        startTransition(() => {
+          router.replace(`?${params.toString()}`, { scroll: false })
+        })
+      }
     }, 300) // 300ms debounce
 
     return () => clearTimeout(timer)

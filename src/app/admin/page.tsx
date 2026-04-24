@@ -47,21 +47,35 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Header */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-black text-gray-900">Panel Administrativo</h1>
-            <Link href="/admin/afiliados" className="text-blue-600 font-bold hover:underline">
-              Gestión de Afiliados
+        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900">Panel Admin</h1>
+            <form action={async () => {
+              'use server'
+              const { logout } = await import('@/lib/auth')
+              await logout()
+              redirect('/login')
+            }}>
+              <button className="text-xs sm:text-sm bg-red-50 text-red-600 px-3 py-1.5 rounded-lg font-bold hover:bg-red-100 transition-colors">
+                Salir
+              </button>
+            </form>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            <Link href="/admin/afiliados" className="flex flex-col items-center justify-center p-3 sm:p-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-colors border border-blue-100 text-center gap-1">
+              <span className="text-xl sm:text-2xl">👥</span>
+              <span className="text-[10px] sm:text-sm font-bold leading-tight">Afiliados</span>
+            </Link>
+            <Link href="/admin/recibos" className="flex flex-col items-center justify-center p-3 sm:p-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl transition-colors border border-emerald-100 text-center gap-1">
+              <span className="text-xl sm:text-2xl">🧾</span>
+              <span className="text-[10px] sm:text-sm font-bold leading-tight">Recibos</span>
+            </Link>
+            <Link href="/admin/publicidad" className="flex flex-col items-center justify-center p-3 sm:p-4 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl transition-colors border border-purple-100 text-center gap-1">
+              <span className="text-xl sm:text-2xl">📸</span>
+              <span className="text-[10px] sm:text-sm font-bold leading-tight">Publicidad</span>
             </Link>
           </div>
-          <form action={async () => {
-            'use server'
-            const { logout } = await import('@/lib/auth')
-            await logout()
-            redirect('/login')
-          }}>
-            <button className="text-red-500 font-medium hover:text-red-700">Cerrar Sesión</button>
-          </form>
         </div>
 
         {/* Create Raffle or Status */}
@@ -73,7 +87,7 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
                   Rifa Activa: {activeRaffle.name}
                   <AdminActions action="edit-raffle-name" id={activeRaffle.id} />
                 </h2>
-                <p className="text-gray-500">Precio: {activeRaffle.price.toLocaleString()} COP | Comisión: {activeRaffle.commissionPct}%</p>
+                <p className="text-gray-500">Precio: {activeRaffle.price.toLocaleString()} | Comisión: {activeRaffle.commissionPct}%</p>
                 <div className="mt-2 text-sm">
                   <span className="font-medium">Números Vendidos: </span> 
                   {activeRaffle.tickets.filter(t => t.status === 'SOLD').length} / 100
@@ -119,7 +133,7 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
                         <div className="text-xs text-gray-500">{order.customerPhone}</div>
                       </td>
                       <td className="py-3 font-medium">{order.tickets.map(t => t.number).join(', ')}</td>
-                      <td className="py-3 font-bold">{order.totalAmount.toLocaleString()} COP</td>
+                      <td className="py-3 font-bold">{order.totalAmount.toLocaleString()}</td>
                       <td className="py-3 text-gray-600">{order.affiliate ? order.affiliate.name : '-'}</td>
                       <td className="py-3 text-right">
                         <AdminActions action="approve-order" id={order.id} />

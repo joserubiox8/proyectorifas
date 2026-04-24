@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 
 export default function DownloadButton({ targetId, fileName = 'comprobante.png' }: { targetId: string, fileName?: string }) {
   const [downloading, setDownloading] = useState(false)
@@ -13,15 +13,13 @@ export default function DownloadButton({ targetId, fileName = 'comprobante.png' 
     setDownloading(true)
     try {
       // Add a slight delay to ensure fonts/styles are fully rendered if needed
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 150))
       
-      const canvas = await html2canvas(element, {
-        scale: 2, // Higher resolution
-        useCORS: true, // Allow external images if any
+      const dataUrl = await toPng(element, {
+        cacheBust: true,
+        pixelRatio: 2,
         backgroundColor: '#ffffff'
       })
-      
-      const dataUrl = canvas.toDataURL('image/png')
       const link = document.createElement('a')
       link.download = fileName
       link.href = dataUrl

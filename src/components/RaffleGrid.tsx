@@ -149,7 +149,7 @@ export default function RaffleGrid({
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Total:</span>
-                <span>{(price * selected.length).toLocaleString('es-CO')} COP</span>
+                <span>{(price * selected.length).toLocaleString('es-CO')}</span>
               </div>
             </div>
           )}

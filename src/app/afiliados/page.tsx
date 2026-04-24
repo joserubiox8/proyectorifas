@@ -68,11 +68,11 @@ export default async function AffiliateDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <h3 className="text-gray-500 text-sm font-medium mb-1">Ventas Totales</h3>
-            <p className="text-3xl font-black">{totalSales.toLocaleString('es-CO')} COP</p>
+            <p className="text-3xl font-black">{totalSales.toLocaleString('es-CO')}</p>
           </div>
           <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-sm">
             <h3 className="text-green-100 text-sm font-medium mb-1">Comisiones Generadas (20%)</h3>
-            <p className="text-3xl font-black">{totalCommissions.toLocaleString('es-CO')} COP</p>
+            <p className="text-3xl font-black">{totalCommissions.toLocaleString('es-CO')}</p>
           </div>
         </div>
 

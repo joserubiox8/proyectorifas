@@ -29,6 +29,7 @@ model Raffle {
   id           String   @id @default(cuid())
   name         String
   price        Float
+  drawDate     String?  // Fecha del sorteo (opcional)
   commissionPct Float   @default(20) // 20% commission
   status       String   @default("ACTIVE") // ACTIVE, CLOSED, CANCELLED
   createdAt    DateTime @default(now())
