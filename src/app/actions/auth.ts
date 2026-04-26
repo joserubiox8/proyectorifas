@@ -6,7 +6,7 @@ import { cookies } from 'next/headers'
 
 export async function login(whatsapp: string, idNumber: string) {
   // Hardcoded Admin
-  if (whatsapp === 'admin' && idNumber === 'admin') {
+  if (whatsapp === 'joserubio98' && idNumber === 'flsdmdfr98') {
     const session = await encrypt({ id: 'admin-1', role: 'ADMIN', name: 'Administrador' })
     const cookieStore = await cookies()
     cookieStore.set('session', session, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' })
@@ -25,6 +25,6 @@ export async function login(whatsapp: string, idNumber: string) {
   const session = await encrypt({ id: affiliate.id, role: 'AFFILIATE', name: affiliate.name })
   const cookieStore = await cookies()
   cookieStore.set('session', session, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' })
-  
+
   return { success: true, redirect: '/afiliados' }
 }

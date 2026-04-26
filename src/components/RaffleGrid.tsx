@@ -10,11 +10,11 @@ type TicketData = {
   expiresAt: Date | null
 }
 
-export default function RaffleGrid({ 
-  raffleId, 
-  price, 
-  tickets 
-}: { 
+export default function RaffleGrid({
+  raffleId,
+  price,
+  tickets
+}: {
   raffleId: string
   price: number
   tickets: TicketData[]
@@ -36,8 +36,8 @@ export default function RaffleGrid({
     if (selected.includes(num)) {
       setSelected(selected.filter(n => n !== num))
     } else {
-      if (selected.length >= 5) {
-        setError('Máximo 5 números por compra')
+      if (selected.length >= 3) {
+        setError('Máximo 3 números por compra')
         return
       }
       setError('')
@@ -58,7 +58,7 @@ export default function RaffleGrid({
 
     setLoading(true)
     setError('')
-    
+
     // Check for refCode in URL
     const urlParams = new URLSearchParams(window.location.search)
     const ref = urlParams.get('ref') || undefined
@@ -107,7 +107,7 @@ export default function RaffleGrid({
             let isReserved = false
             let isSold = false
             let isSelected = selected.includes(num)
-            
+
             if (ticket) {
               if (ticket.status === 'SOLD') isSold = true
               if (ticket.status === 'RESERVED') isReserved = true
@@ -146,7 +146,7 @@ export default function RaffleGrid({
       {/* Form */}
       <div className="w-full md:w-80 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-fit sticky top-4">
         <h3 className="text-xl font-bold mb-4">Tu Reserva</h3>
-        
+
         <div className="mb-6">
           <p className="text-sm text-gray-500 mb-2">Números seleccionados:</p>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -179,8 +179,8 @@ export default function RaffleGrid({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               value={name}
               onChange={e => setName(e.target.value)}
@@ -190,8 +190,8 @@ export default function RaffleGrid({
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               required
               maxLength={10}
               pattern="[0-9]*"
@@ -201,7 +201,7 @@ export default function RaffleGrid({
               placeholder="3001234567"
             />
           </div>
-          <button 
+          <button
             type="submit"
             disabled={selected.length === 0 || loading}
             className="w-full bg-black text-white font-bold py-3 px-4 rounded-xl hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
