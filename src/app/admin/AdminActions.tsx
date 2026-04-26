@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { approveOrder, cancelOrder } from '@/app/actions/approval'
-import { createRaffle, deleteRaffle, updateRaffleName } from '@/app/actions/raffle'
+import { approveOrder, cancelOrder, toggleContacted } from '@/app/actions/approval'
+import { createRaffle, deleteRaffle, updateRaffleName, updateRaffleDrawDate } from '@/app/actions/raffle'
 import { createAffiliate, deleteAffiliate, toggleCommissionPaid } from '@/app/actions/affiliate'
 
-export default function AdminActions({ action, id, isPaid }: { action: string, id?: string, isPaid?: boolean }) {
+export default function AdminActions({ action, id, isPaid, isContacted }: { action: string, id?: string, isPaid?: boolean, isContacted?: boolean }) {
   const [loading, setLoading] = useState(false)
 
   const handleApprove = async () => {
@@ -19,12 +19,31 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
   }
 
   const handleCancel = async () => {
-    if (!id || !confirm('¿Estás seguro de cancelar esta venta? Esto liberará los números principales y secundarios asociados.')) return
+    if (!id || !confirm('¿Estás seguro de declinar esta reserva? Esto liberará los números y los pondrá disponibles nuevamente.')) return
     setLoading(true)
     const res = await cancelOrder(id)
     if (!res.success) {
       alert(res.error)
     }
+    setLoading(false)
+  }
+
+  const handleToggleContacted = async () => {
+    if (!id) return
+    setLoading(true)
+    const res = await toggleContacted(id, !isContacted)
+    if (!res.success) alert(res.error)
+    setLoading(false)
+  }
+
+  const handleEditDrawDate = async () => {
+    if (!id) return
+    const current = (document.getElementById(`draw-date-${id}`) as HTMLElement | null)?.dataset.date || ''
+    const newDate = prompt('Ingresa la fecha del sorteo (ej. Sábado 10 de Mayo):\nDejar vacío para eliminar la fecha.', current)
+    if (newDate === null) return // cancelled
+    setLoading(true)
+    const res = await updateRaffleDrawDate(id, newDate.trim() || null)
+    if (!res.success) alert(res.error)
     setLoading(false)
   }
 
@@ -109,32 +128,32 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
 
   if (action === 'approve-order') {
     return (
-      <button 
+      <button
         onClick={handleApprove}
         disabled={loading}
         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-50 transition-colors shadow-sm shadow-green-200"
       >
-        {loading ? 'Aprobando...' : 'Aprobar Pago'}
+        {loading ? 'Aprobando...' : 'Aprobar'}
       </button>
     )
   }
 
   if (action === 'cancel-order') {
     return (
-      <button 
+      <button
         onClick={handleCancel}
         disabled={loading}
         title="Cancelar venta y liberar números"
-        className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded font-bold transition-colors disabled:opacity-50 mt-2 w-full"
+        className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold transition-colors disabled:opacity-50 w-full text-center border border-red-100"
       >
-        {loading ? '...' : 'Liberar Números'}
+        {loading ? 'Rechazando...' : 'Rechazar'}
       </button>
     )
   }
 
   if (action === 'create-raffle') {
     return (
-      <button 
+      <button
         onClick={handleCreate}
         disabled={loading}
         className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-bold transition-colors shadow-lg"
@@ -146,7 +165,7 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
 
   if (action === 'delete-raffle') {
     return (
-      <button 
+      <button
         onClick={handleDeleteRaffle}
         disabled={loading}
         className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-50 transition-colors"
@@ -156,9 +175,22 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
     )
   }
 
+  if (action === 'edit-draw-date') {
+    return (
+      <button
+        onClick={handleEditDrawDate}
+        disabled={loading}
+        className="text-gray-400 hover:text-blue-600 transition-colors ml-1 text-sm"
+        title="Editar fecha del sorteo"
+      >
+        {loading ? '⏳' : '🗓️'}
+      </button>
+    )
+  }
+
   if (action === 'edit-raffle-name') {
     return (
-      <button 
+      <button
         onClick={handleEditRaffleName}
         disabled={loading}
         className="text-gray-400 hover:text-gray-800 transition-colors ml-2"
@@ -172,28 +204,28 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
   if (action === 'create-affiliate') {
     return (
       <form onSubmit={handleCreateAffiliate} className="space-y-3 text-sm">
-        <input 
-          placeholder="Nombre Completo" 
+        <input
+          placeholder="Nombre Completo"
           className="w-full p-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
           value={affName}
           onChange={e => setAffName(e.target.value)}
           required
         />
-        <input 
-          placeholder="WhatsApp (ej. 3001234567)" 
+        <input
+          placeholder="WhatsApp (ej. 3001234567)"
           className="w-full p-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
           value={affWA}
           onChange={e => setAffWA(e.target.value)}
           required
         />
-        <input 
-          placeholder="Cédula" 
+        <input
+          placeholder="Cédula"
           className="w-full p-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
           value={affID}
           onChange={e => setAffID(e.target.value)}
           required
         />
-        <button 
+        <button
           type="submit"
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition-colors disabled:opacity-50"
@@ -206,7 +238,7 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
 
   if (action === 'delete-affiliate') {
     return (
-      <button 
+      <button
         onClick={handleDeleteAffiliate}
         disabled={loading}
         className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors"
@@ -217,16 +249,32 @@ export default function AdminActions({ action, id, isPaid }: { action: string, i
     )
   }
 
+  if (action === 'toggle-contacted') {
+    return (
+      <button
+        onClick={handleToggleContacted}
+        disabled={loading}
+        title={isContacted ? 'Marcar como NO contactado' : 'Marcar como contactado'}
+        className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-colors border w-full text-center ${
+          isContacted
+            ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200'
+            : 'bg-red-50 text-red-600 border-red-100 hover:bg-red-100'
+        }`}
+      >
+        {loading ? '...' : isContacted ? '✅ Contactado' : '❌ Sin contacto'}
+      </button>
+    )
+  }
+
   if (action === 'toggle-commission') {
     return (
-      <button 
+      <button
         onClick={handleToggleCommission}
         disabled={loading}
-        className={`text-xs px-2 py-1 rounded font-bold transition-colors ${
-          isPaid 
-            ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-        }`}
+        className={`text-xs px-2 py-1 rounded font-bold transition-colors ${isPaid
+          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+          }`}
         title={isPaid ? "Marcar como pendiente" : "Marcar como pagada"}
       >
         {loading ? '...' : isPaid ? '✅ Pagada' : '⏳ Pendiente'}

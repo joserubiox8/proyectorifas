@@ -87,6 +87,22 @@ export async function reserveTickets(data: {
       const expiresAt = null // Reservations are now permanent until cancelled
 
       for (const num of data.numbers) {
+        // Tomar 10 números secundarios del pool para cada número principal
+        const pool = await tx.secondaryNumberPool.findMany({
+          where: { raffleId: data.raffleId, isUsed: false },
+          take: 10,
+          orderBy: { id: 'asc' }
+        })
+        
+        if (pool.length < 10) {
+          throw new Error('No hay suficientes números secundarios disponibles.')
+        }
+
+        await tx.secondaryNumberPool.updateMany({
+          where: { id: { in: pool.map(p => p.id) } },
+          data: { isUsed: true }
+        })
+
         const existing = existingTickets.find((t) => t.number === num)
         if (existing) {
           await tx.ticket.update({
@@ -94,26 +110,13 @@ export async function reserveTickets(data: {
             data: {
               status: 'RESERVED',
               expiresAt,
-              orderId: order.id
+              orderId: order.id,
+              secondaries: {
+                create: pool.map(p => ({ number: p.number }))
+              }
             }
           })
         } else {
-          // Take 10 secondary numbers from the pool
-          const pool = await tx.secondaryNumberPool.findMany({
-            where: { raffleId: data.raffleId, isUsed: false },
-            take: 10,
-            orderBy: { id: 'asc' }
-          })
-          
-          if (pool.length < 10) {
-            throw new Error('No hay suficientes números secundarios disponibles.')
-          }
-
-          await tx.secondaryNumberPool.updateMany({
-            where: { id: { in: pool.map(p => p.id) } },
-            data: { isUsed: true }
-          })
-
           await tx.ticket.create({
             data: {
               number: num,

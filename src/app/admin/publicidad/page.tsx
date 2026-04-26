@@ -28,7 +28,7 @@ export default async function PublicidadPage() {
 
   // Create grid 00 to 99
   const gridNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'))
-  
+
   const soldCount = activeRaffle.tickets.filter(t => t.status === 'SOLD').length
   const reservedCount = activeRaffle.tickets.filter(t => t.status === 'RESERVED').length
   const availableCount = 100 - soldCount - reservedCount
@@ -36,7 +36,7 @@ export default async function PublicidadPage() {
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        
+
         {/* Header */}
         <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-xl sm:text-2xl font-black text-gray-900">Material Publicitario</h1>
@@ -59,12 +59,96 @@ export default async function PublicidadPage() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-          
-          {/* Card 1: La Clásica */}
+
+          {/* Card 0: Estilo Página Principal */}
+          <div className="flex flex-col items-center gap-4 md:col-span-2 lg:col-span-3">
+            <div className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
+              <h3 className="font-bold text-gray-800 mb-1">0. Estilo Página Principal</h3>
+              <p className="text-gray-500 text-xs mb-4">El diseño limpio de la web, con los colores originales y todos los números visibles.</p>
+              <div className="flex flex-col sm:flex-row gap-6 items-start">
+                {/* Card preview */}
+                <div className="flex justify-center bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-inner flex-shrink-0 mx-auto sm:mx-0">
+                  <div
+                    id="promo-main"
+                    className="bg-[#F5F2EE] w-full max-w-[340px] aspect-[9/16] rounded-2xl overflow-hidden flex flex-col relative shadow-xl"
+                  >
+                    {/* Header */}
+                    <div className="flex flex-col items-center pt-5 pb-3 px-4 bg-[#F5F2EE]">
+                      <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain mb-2" crossOrigin="anonymous" />
+                      <h2 className="text-xl font-black text-gray-900 text-center leading-tight">
+                        {activeRaffle.name}
+                      </h2>
+                      {activeRaffle.drawDate && (
+                        <div className="mt-1 bg-gray-200 px-2 py-0.5 rounded-full text-[10px] font-semibold text-gray-600">
+                          Sorteo: {activeRaffle.drawDate}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Number grid */}
+                    <div className="flex-1 px-4 pb-4">
+                      <div className="grid grid-cols-10 gap-1">
+                        {Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0')).map((num) => {
+                          const ticket = activeRaffle.tickets.find(t => t.number === num)
+                          let cellClass = 'bg-[#E9E5E0] text-gray-800'
+                          if (ticket?.status === 'SOLD') cellClass = 'bg-red-500 text-white'
+                          else if (ticket?.status === 'RESERVED') cellClass = 'bg-yellow-400 text-yellow-900'
+                          return (
+                            <div
+                              key={num}
+                              className={`aspect-square rounded flex items-center justify-center font-bold text-[8px] ${cellClass}`}
+                            >
+                              {ticket?.status === 'SOLD' ? '×' : num}
+                            </div>
+                          )
+                        })}
+                      </div>
+
+                      {/* Legend */}
+                      <div className="flex justify-center gap-3 mt-3 text-[9px] font-semibold text-gray-600">
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 bg-[#E9E5E0] rounded-sm border border-gray-300"></div>Libre</div>
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 bg-yellow-400 rounded-sm"></div>Reservado</div>
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 bg-red-500 rounded-sm"></div>Vendido</div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="mt-3 mb-1">
+                        <div className="flex justify-between text-[9px] font-bold mb-1 text-gray-600 uppercase tracking-wide">
+                          <span className="text-red-500">{soldCount} Vendidos</span>
+                          <span className="text-yellow-600">{reservedCount} Reservados</span>
+                          <span className="text-gray-500">{availableCount} Libres</span>
+                        </div>
+                        <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden flex">
+                          <div className="h-full bg-red-500 transition-all" style={{ width: `${soldCount}%` }}></div>
+                          <div className="h-full bg-yellow-400 transition-all" style={{ width: `${reservedCount}%` }}></div>
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-center mt-3">
+                        <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Precio por número</div>
+                        <div className="text-xl font-black text-gray-900">${activeRaffle.price.toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 flex flex-col gap-3 w-full">
+                  <p className="text-gray-600 text-sm">
+                    Este diseño replica exactamente la página principal de la rifa.
+                    Es ideal para publicarlo tal cual — el cliente ve los números disponibles de un vistazo y entiende perfectamente el sistema.
+                  </p>
+                  <DownloadButton targetId="promo-main" fileName={`Principal-${activeRaffle.name.replace(/\s+/g, '-')}.png`} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <div className="flex flex-col items-center gap-4">
             <div className="flex justify-center bg-gray-200 p-4 sm:p-6 rounded-3xl overflow-hidden shadow-inner w-full">
-              <div 
-                id="promo-classic" 
+              <div
+                id="promo-classic"
                 className="bg-gradient-to-br from-indigo-900 via-purple-900 to-black w-full max-w-[320px] aspect-[9/16] rounded-3xl shadow-2xl overflow-hidden flex flex-col relative"
               >
                 {/* Decorative elements */}
@@ -83,7 +167,7 @@ export default async function PublicidadPage() {
                       {activeRaffle.name}
                     </h2>
                     <div className="text-xl font-bold mt-1 text-white/90">
-                      {activeRaffle.price.toLocaleString()}
+                      ${activeRaffle.price.toLocaleString()}
                     </div>
                   </div>
 
@@ -136,13 +220,13 @@ export default async function PublicidadPage() {
           {/* Card 2: Urgencia Minimalista */}
           <div className="flex flex-col items-center gap-4">
             <div className="flex justify-center bg-gray-200 p-4 sm:p-6 rounded-3xl overflow-hidden shadow-inner w-full">
-              <div 
-                id="promo-fomo" 
+              <div
+                id="promo-fomo"
                 className="bg-gradient-to-br from-red-600 via-rose-600 to-orange-600 w-full max-w-[320px] aspect-[9/16] rounded-3xl shadow-2xl overflow-hidden flex flex-col relative"
               >
                 <div className="absolute inset-0 bg-black/10 mix-blend-multiply"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-red-400 rounded-full mix-blend-screen filter blur-3xl opacity-50"></div>
-                
+
                 <div className="relative z-10 flex flex-col h-full p-6 text-white items-center justify-between text-center">
                   <div className="mt-6">
                     <img src="/logo.png" alt="Logo" className="h-16 w-auto object-contain mb-6 mx-auto drop-shadow-md" crossOrigin="anonymous" />
@@ -162,7 +246,7 @@ export default async function PublicidadPage() {
 
                   <div className="mb-6">
                     <div className="text-2xl font-black text-white drop-shadow-lg mb-4">
-                      {activeRaffle.price.toLocaleString()}
+                      ${activeRaffle.price.toLocaleString()}
                     </div>
                     <div className="text-xs text-white mt-2 font-bold uppercase bg-black/30 px-5 py-3 rounded-full inline-block backdrop-blur-sm border border-white/20">
                       ¡Asegura el tuyo ya!
@@ -180,8 +264,8 @@ export default async function PublicidadPage() {
           {/* Card 3: Ticket Dorado VIP */}
           <div className="flex flex-col items-center gap-4">
             <div className="flex justify-center bg-gray-200 p-4 sm:p-6 rounded-3xl overflow-hidden shadow-inner w-full">
-              <div 
-                id="promo-vip" 
+              <div
+                id="promo-vip"
                 className="bg-gradient-to-tr from-yellow-900 via-neutral-900 to-yellow-800 w-full max-w-[320px] aspect-[9/16] rounded-3xl shadow-2xl overflow-hidden flex flex-col relative"
               >
                 <div className="absolute inset-4 border border-yellow-500/30 rounded-2xl pointer-events-none"></div>
@@ -210,9 +294,7 @@ export default async function PublicidadPage() {
                         <div className="text-base font-bold text-yellow-300">{activeRaffle.drawDate}</div>
                       </div>
                     )}
-                    <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-black uppercase tracking-wider py-3 px-6 rounded-xl text-xs w-full shadow-[0_4px_14px_0_rgba(234,179,8,0.39)]">
-                      Comprar Boleto
-                    </div>
+
                   </div>
                 </div>
               </div>

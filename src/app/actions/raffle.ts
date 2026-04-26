@@ -104,3 +104,19 @@ export async function updateRaffleName(id: string, name: string) {
     return { success: false, error: 'Error al actualizar el nombre.' }
   }
 }
+
+export async function updateRaffleDrawDate(id: string, drawDate: string | null) {
+  try {
+    await prisma.raffle.update({
+      where: { id },
+      data: { drawDate }
+    })
+    revalidatePath('/')
+    revalidatePath('/admin')
+    revalidatePath('/admin/publicidad')
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating draw date:', error)
+    return { success: false, error: 'Error al actualizar la fecha.' }
+  }
+}

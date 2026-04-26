@@ -79,6 +79,7 @@ model Order {
   affiliateId  String?
   affiliate    Affiliate? @relation(fields: [affiliateId], references: [id])
   commissionPaid Boolean  @default(false)
+  contacted      Boolean  @default(false) // Si el cliente se contact\u00f3 por WhatsApp
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   tickets      Ticket[]

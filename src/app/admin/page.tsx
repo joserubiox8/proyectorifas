@@ -88,6 +88,17 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
                   <AdminActions action="edit-raffle-name" id={activeRaffle.id} />
                 </h2>
                 <p className="text-gray-500">Precio: {activeRaffle.price.toLocaleString()} | Comisión: {activeRaffle.commissionPct}%</p>
+                <p className="text-gray-500 flex items-center gap-1 mt-0.5">
+                  <span>Sorteo:</span>
+                  <span
+                    id={`draw-date-${activeRaffle.id}`}
+                    data-date={activeRaffle.drawDate || ''}
+                    className={activeRaffle.drawDate ? 'font-medium text-gray-700' : 'italic text-gray-400'}
+                  >
+                    {activeRaffle.drawDate || 'Sin fecha definida'}
+                  </span>
+                  <AdminActions action="edit-draw-date" id={activeRaffle.id} />
+                </p>
                 <div className="mt-2 text-sm">
                   <span className="font-medium">Números Vendidos: </span> 
                   {activeRaffle.tickets.filter(t => t.status === 'SOLD').length} / 100
@@ -121,22 +132,33 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
                     <th className="pb-3 text-gray-500 font-medium">Números</th>
                     <th className="pb-3 text-gray-500 font-medium">Total</th>
                     <th className="pb-3 text-gray-500 font-medium">Afiliado</th>
+                    <th className="pb-3 text-gray-500 font-medium">Contacto</th>
                     <th className="pb-3 text-gray-500 font-medium text-right">Acción</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {pendingOrders.map(order => (
-                    <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-3 font-mono font-bold text-blue-600">{order.receiptCode}</td>
-                      <td className="py-3">
+                    <tr key={order.id} className={`transition-colors ${
+                      order.contacted
+                        ? 'bg-green-50 hover:bg-green-100'
+                        : 'bg-red-50 hover:bg-red-100'
+                    }`}>
+                      <td className="py-3 px-1 font-mono font-bold text-blue-600">{order.receiptCode}</td>
+                      <td className="py-3 px-1">
                         <div className="font-medium">{order.customerName}</div>
                         <div className="text-xs text-gray-500">{order.customerPhone}</div>
                       </td>
-                      <td className="py-3 font-medium">{order.tickets.map(t => t.number).join(', ')}</td>
-                      <td className="py-3 font-bold">{order.totalAmount.toLocaleString()}</td>
-                      <td className="py-3 text-gray-600">{order.affiliate ? order.affiliate.name : '-'}</td>
+                      <td className="py-3 px-1 font-medium">{order.tickets.map(t => t.number).join(', ')}</td>
+                      <td className="py-3 px-1 font-bold">{order.totalAmount.toLocaleString()}</td>
+                      <td className="py-3 px-1 text-gray-600">{order.affiliate ? order.affiliate.name : '-'}</td>
+                      <td className="py-3 px-1">
+                        <AdminActions action="toggle-contacted" id={order.id} isContacted={order.contacted} />
+                      </td>
                       <td className="py-3 text-right">
-                        <AdminActions action="approve-order" id={order.id} />
+                        <div className="flex flex-col items-end gap-1">
+                          <AdminActions action="approve-order" id={order.id} />
+                          <AdminActions action="cancel-order" id={order.id} />
+                        </div>
                       </td>
                     </tr>
                   ))}

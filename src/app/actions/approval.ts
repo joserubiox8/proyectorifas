@@ -3,6 +3,19 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
+export async function toggleContacted(orderId: string, contacted: boolean) {
+  try {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { contacted }
+    })
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 export async function approveOrder(orderId: string) {
   try {
     const result = await prisma.$transaction(async (tx) => {

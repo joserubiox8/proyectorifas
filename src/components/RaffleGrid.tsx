@@ -85,7 +85,22 @@ export default function RaffleGrid({
     <div className="w-full max-w-4xl mx-auto p-4 flex flex-col md:flex-row gap-8">
       {/* Grid */}
       <div className="flex-1">
-        <h2 className="text-2xl font-bold mb-4 text-center">Selecciona tus números</h2>
+        <h2 className="text-2xl font-bold mb-3 text-center">Selecciona tus números</h2>
+        {/* Color legend */}
+        <div className="flex justify-center gap-4 mb-4 text-xs font-semibold text-gray-600">
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 rounded bg-[#E9E5E0] border border-gray-300"></div>
+            Disponible
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 rounded bg-yellow-400"></div>
+            Reservado
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-4 rounded bg-red-500"></div>
+            Comprado
+          </div>
+        </div>
         <div className="grid grid-cols-10 gap-2 sm:gap-3">
           {gridNumbers.map((num) => {
             const ticket = tickets.find(t => t.number === num)

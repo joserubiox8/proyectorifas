@@ -29,14 +29,6 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
   const adminWhatsApp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '573000000000'
   const waLink = `https://wa.me/${adminWhatsApp}?text=${encodedMessage}`
 
-  const nequi = process.env.NEXT_PUBLIC_NEQUI || '3054205035'
-  const bancolombia = process.env.NEXT_PUBLIC_BANCOLOMBIA_AHORROS || '197-209605-27'
-  const holderNequi = "Jose Rubio"
-  const holderBancolombia = "Jose Ricardo Rubio Montero"
-  const keys = [
-    { value: "@jose480", holder: "Jose Ricardo Rubio Montero" },
-    { value: "3054205035", holder: "Jose Ricardo Rubio Montero" }
-  ]
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 flex items-center justify-center">
@@ -54,7 +46,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
             <div className="bg-yellow-400 p-6 pt-8 text-center flex flex-col items-center">
               <img src="/logo.png" alt="Logo" className="h-16 w-auto object-contain mb-4" crossOrigin="anonymous" />
               <h1 className="text-2xl font-black text-yellow-900 mb-2">¡Reserva Exitosa!</h1>
-              <p className="text-yellow-800 text-sm">Transfiere ahora para asegurar tus números.</p>
+              <p className="text-yellow-800 text-sm">Confirma tu reserva para asegurar tus números.</p>
             </div>
           )}
 
@@ -89,41 +81,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
               </div>
             </div>
 
-            {order.status !== 'APPROVED' && (
-              <div className="mb-6 space-y-3">
-                <h3 className="font-bold text-gray-900">Instrucciones de Pago:</h3>
-                <div className="bg-blue-50 text-blue-900 p-4 rounded-xl text-sm space-y-2">
-                  <p>1. Realiza la transferencia a cualquiera de estas cuentas:</p>
-                  <div className="space-y-3 mt-2">
-                    <div className="bg-white p-3 rounded-lg border border-blue-100">
-                      <p className="font-bold text-blue-900">Nequi</p>
-                      <p className="text-lg font-mono">{nequi}</p>
-                      <p className="text-xs text-blue-700">Titular: {holderNequi}</p>
-                    </div>
 
-                    <div className="bg-white p-3 rounded-lg border border-blue-100">
-                      <p className="font-bold text-blue-900">Bancolombia (Ahorros)</p>
-                      <p className="text-lg font-mono">{bancolombia}</p>
-                      <p className="text-xs text-blue-700">Titular: {holderBancolombia}</p>
-                    </div>
-
-                    <div className="bg-white p-3 rounded-lg border border-blue-100">
-                      <p className="font-bold text-blue-900">Llaves (Transfiya / Otros)</p>
-                      <div className="space-y-2 mt-1">
-                        {keys.map((key, index) => (
-                          <div key={index} className="border-t border-blue-50 pt-1 first:border-0 first:pt-0">
-                            <p className="font-mono">{key.value}</p>
-                            <p className="text-[10px] text-blue-700">Titular: {key.holder}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="mt-3">2. Guarda el comprobante de la transferencia.</p>
-                  <p>3. Envíanos el comprobante por WhatsApp presionando el botón abajo.</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -140,7 +98,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
               </svg>
-              Enviar Comprobante
+              Confirmar Reserva
             </a>
           )}
 
