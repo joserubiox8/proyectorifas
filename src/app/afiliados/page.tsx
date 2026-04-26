@@ -83,7 +83,7 @@ export default async function AffiliateDashboard() {
           </p>
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex items-center justify-between">
             <code className="text-sm font-bold text-blue-600 break-all">
-              https://tu-dominio.com/?ref={affiliate.refCode}
+              https://jrifas.com/?ref={affiliate.refCode}
             </code>
           </div>
         </div>

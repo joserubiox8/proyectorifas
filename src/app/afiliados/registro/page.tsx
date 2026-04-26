@@ -20,12 +20,12 @@ export default function AffiliateRegistration() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    
+
     // Auto-fill account with WhatsApp if not provided (common for Nequi/Daviplata)
     const finalAccount = account || whatsapp
 
     const res = await createAffiliate({ name, whatsapp, idNumber, bank, account: finalAccount })
-    
+
     if (res.success) {
       setSuccess(true)
       setTimeout(() => {
@@ -55,7 +55,7 @@ export default function AffiliateRegistration() {
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 flex items-center justify-center">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-        
+
         <div className="bg-black p-8 text-center">
           <h1 className="text-2xl font-black text-white mb-2">Únete como Afiliado</h1>
           <p className="text-gray-400 text-sm">Gana comisiones por cada boleta vendida con tu enlace único.</p>
@@ -71,8 +71,8 @@ export default function AffiliateRegistration() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Nombre Completo</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 required
                 className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all bg-gray-50 focus:bg-white"
                 placeholder="Ej. Juan Pérez"
@@ -83,8 +83,8 @@ export default function AffiliateRegistration() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Cédula</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 required
                 className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all bg-gray-50 focus:bg-white"
                 placeholder="Esta será tu contraseña"
@@ -95,8 +95,8 @@ export default function AffiliateRegistration() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">WhatsApp</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 required
                 className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all bg-gray-50 focus:bg-white"
                 placeholder="Este será tu usuario"
@@ -108,7 +108,7 @@ export default function AffiliateRegistration() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Banco</label>
-                <select 
+                <select
                   className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all bg-gray-50 focus:bg-white"
                   value={bank}
                   onChange={e => setBank(e.target.value)}
@@ -120,17 +120,17 @@ export default function AffiliateRegistration() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Número de Cuenta</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all bg-gray-50 focus:bg-white"
-                  placeholder="Igual a WhatsApp"
+                  placeholder="Cuenta"
                   value={account}
                   onChange={e => setAccount(e.target.value)}
                 />
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-colors shadow-lg mt-6 disabled:opacity-50"

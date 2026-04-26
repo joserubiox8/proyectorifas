@@ -26,7 +26,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
   const encodedMessage = encodeURIComponent(message)
 
   // Use environment variables for admin contact
-  const adminWhatsApp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '573000000000'
+  const adminWhatsApp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '573054205035'
   const waLink = `https://wa.me/${adminWhatsApp}?text=${encodedMessage}`
 
 

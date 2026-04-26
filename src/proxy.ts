@@ -3,9 +3,16 @@ import type { NextRequest } from 'next/server'
 import { decrypt } from '@/lib/auth'
 
 const protectedRoutes = ['/admin', '/afiliados']
+const publicAffiliateRoutes = ['/afiliados/registro']
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
+
+  // Rutas de afiliados que son públicas (no requieren sesión)
+  if (publicAffiliateRoutes.some(route => path.startsWith(route))) {
+    return NextResponse.next()
+  }
+
   const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
 
   if (isProtectedRoute) {
@@ -20,11 +27,11 @@ export default async function proxy(req: NextRequest) {
     }
 
     if (path.startsWith('/admin') && session.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/', req.url))
+      return NextResponse.redirect(new URL('/login', req.url))
     }
     
     if (path.startsWith('/afiliados') && session.role !== 'AFFILIATE') {
-      return NextResponse.redirect(new URL('/', req.url))
+      return NextResponse.redirect(new URL('/login', req.url))
     }
   }
 

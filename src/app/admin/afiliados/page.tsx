@@ -55,7 +55,7 @@ export default async function AdminAffiliates() {
               <h3 className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Enlace de Auto-Registro</h3>
               <p className="text-xs text-gray-500 mb-3">Comparte este enlace para que los afiliados se registren por sí mismos:</p>
               <div className="bg-gray-50 p-2 rounded border border-gray-200 text-xs font-mono overflow-x-auto select-all">
-                https://tusitio.com/afiliados/registro
+                https://jrifas.com/afiliados/registro
               </div>
             </div>
           </div>
