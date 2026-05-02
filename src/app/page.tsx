@@ -1,4 +1,5 @@
 import RaffleGrid from '@/components/RaffleGrid'
+import Footer from '@/components/Footer'
 import { getActiveRaffle } from '@/app/actions/raffle'
 
 export const dynamic = 'force-dynamic'
@@ -35,6 +36,7 @@ export default async function Home() {
           price={raffle.price}
           tickets={raffle.tickets}
         />
+        <Footer />
       </div>
     </main>
   )

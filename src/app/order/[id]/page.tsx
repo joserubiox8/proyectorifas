@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import DownloadButton from '@/components/DownloadButton'
+import Footer from '@/components/Footer'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,9 +30,8 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
   const adminWhatsApp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '573054205035'
   const waLink = `https://wa.me/${adminWhatsApp}?text=${encodedMessage}`
 
-
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 flex items-center justify-center">
+    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 flex flex-col items-center justify-center">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col gap-4 bg-transparent shadow-none pb-8">
 
         {/* Receipt Card to Capture */}
@@ -109,6 +109,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
           </div>
         </div>
       </div>
+      <Footer />
     </main>
   )
 }
