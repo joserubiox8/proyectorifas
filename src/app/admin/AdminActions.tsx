@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { approveOrder, cancelOrder, toggleContacted } from '@/app/actions/approval'
 import { createRaffle, deleteRaffle, updateRaffleName, updateRaffleDrawDate } from '@/app/actions/raffle'
-import { createAffiliate, deleteAffiliate, toggleCommissionPaid } from '@/app/actions/affiliate'
+import { createAffiliate, deleteAffiliate, toggleCommissionPaid, updateAffiliateBank } from '@/app/actions/affiliate'
 
 export default function AdminActions({ action, id, isPaid, isContacted }: { action: string, id?: string, isPaid?: boolean, isContacted?: boolean }) {
   const [loading, setLoading] = useState(false)
@@ -89,6 +89,8 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
   const [affName, setAffName] = useState('')
   const [affWA, setAffWA] = useState('')
   const [affID, setAffID] = useState('')
+  const [affBank, setAffBank] = useState('Nequi')
+  const [affAccount, setAffAccount] = useState('')
 
   const handleCreateAffiliate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -97,16 +99,31 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
       name: affName,
       whatsapp: affWA,
       idNumber: affID,
-      bank: 'Nequi', // Default for now
-      account: affWA
+      bank: affBank,
+      account: affAccount
     })
     if (res.success) {
       setAffName('')
       setAffWA('')
       setAffID('')
+      setAffBank('Nequi')
+      setAffAccount('')
     } else {
       alert(res.error)
     }
+    setLoading(false)
+  }
+
+  const handleEditBank = async () => {
+    if (!id) return
+    const bank = prompt('Ingresa el nuevo banco (ej. Nequi, Daviplata, Bancolombia):')
+    if (!bank) return
+    const account = prompt('Ingresa el nuevo número de cuenta:')
+    if (!account) return
+    
+    setLoading(true)
+    const res = await updateAffiliateBank(id, bank, account)
+    if (!res.success) alert(res.error)
     setLoading(false)
   }
 
@@ -225,6 +242,24 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
           onChange={e => setAffID(e.target.value)}
           required
         />
+        <div className="grid grid-cols-2 gap-2">
+          <select 
+            className="w-full p-2 border rounded-lg outline-none focus:ring-1 focus:ring-black bg-white"
+            value={affBank}
+            onChange={e => setAffBank(e.target.value)}
+          >
+            <option value="Nequi">Nequi</option>
+            <option value="Daviplata">Daviplata</option>
+            <option value="Bancolombia">Bancolombia</option>
+          </select>
+          <input
+            placeholder="Número de Cuenta"
+            className="w-full p-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
+            value={affAccount}
+            onChange={e => setAffAccount(e.target.value)}
+            required
+          />
+        </div>
         <button
           type="submit"
           disabled={loading}
@@ -245,6 +280,19 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
         title="Eliminar Afiliado"
       >
         🗑️
+      </button>
+    )
+  }
+
+  if (action === 'edit-affiliate-bank') {
+    return (
+      <button
+        onClick={handleEditBank}
+        disabled={loading}
+        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-full transition-colors text-xs"
+        title="Editar Banco"
+      >
+        ✏️ Banco
       </button>
     )
   }

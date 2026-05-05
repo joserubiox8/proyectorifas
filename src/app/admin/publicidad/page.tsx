@@ -29,7 +29,7 @@ export default async function PublicidadPage() {
   // Create grid 00 to 99
   const gridNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'))
 
-  const soldCount = activeRaffle.tickets.filter(t => t.status === 'SOLD').length
+  const soldCount = activeRaffle.tickets.filter(t => t.status === 'SOLD' || t.status === 'LOCKED').length
   const reservedCount = activeRaffle.tickets.filter(t => t.status === 'RESERVED').length
   const availableCount = 100 - soldCount - reservedCount
 
@@ -48,13 +48,9 @@ export default async function PublicidadPage() {
         {/* Controls / Info */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
           <h2 className="text-xl font-bold mb-2">Promociona tu Rifa</h2>
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-gray-500 text-sm">
             Elige el diseño que mejor se adapte a tu estrategia de hoy y descárgalo con un clic. Todos los diseños están optimizados para Historias de Instagram o WhatsApp.
           </p>
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-sm text-blue-900">
-            <span className="font-bold block mb-1">💡 Tip de Marketing:</span>
-            Alterna entre estos diseños. Usa el "VIP" para anunciar la rifa, "La Clásica" para mostrar qué números quedan, y "Urgencia" cuando queden pocos cupos.
-          </div>
         </div>
 
         {/* Cards Grid */}
@@ -75,7 +71,7 @@ export default async function PublicidadPage() {
                     {/* Header */}
                     <div className="flex flex-col items-center pt-5 pb-3 px-4 bg-[#F5F2EE]">
                       <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain mb-2" crossOrigin="anonymous" />
-                      <h2 className="text-xl font-black text-gray-900 text-center leading-tight">
+                      <h2 className="text-lg font-black text-gray-900 text-center leading-tight">
                         {activeRaffle.name}
                       </h2>
                       {activeRaffle.drawDate && (
@@ -91,36 +87,27 @@ export default async function PublicidadPage() {
                         {Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0')).map((num) => {
                           const ticket = activeRaffle.tickets.find(t => t.number === num)
                           let cellClass = 'bg-[#E9E5E0] text-gray-800'
-                          if (ticket?.status === 'SOLD') cellClass = 'bg-red-500 text-white'
-                          else if (ticket?.status === 'RESERVED') cellClass = 'bg-yellow-400 text-yellow-900'
+                          const isSoldOrReserved = ticket?.status === 'SOLD' || ticket?.status === 'RESERVED'
+                          if (isSoldOrReserved) cellClass = 'bg-red-500 text-white'
                           return (
                             <div
                               key={num}
                               className={`aspect-square rounded flex items-center justify-center font-bold text-[8px] ${cellClass}`}
                             >
-                              {ticket?.status === 'SOLD' ? '×' : num}
+                              {isSoldOrReserved ? '×' : num}
                             </div>
                           )
                         })}
                       </div>
 
-                      {/* Legend */}
-                      <div className="flex justify-center gap-3 mt-3 text-[9px] font-semibold text-gray-600">
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 bg-[#E9E5E0] rounded-sm border border-gray-300"></div>Libre</div>
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 bg-yellow-400 rounded-sm"></div>Reservado</div>
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 bg-red-500 rounded-sm"></div>Vendido</div>
-                      </div>
-
                       {/* Progress bar */}
-                      <div className="mt-3 mb-1">
+                      <div className="mt-4 mb-1">
                         <div className="flex justify-between text-[9px] font-bold mb-1 text-gray-600 uppercase tracking-wide">
-                          <span className="text-red-500">{soldCount} Vendidos</span>
-                          <span className="text-yellow-600">{reservedCount} Reservados</span>
+                          <span className="text-red-500">{soldCount + reservedCount} Vendidos</span>
                           <span className="text-gray-500">{availableCount} Libres</span>
                         </div>
                         <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden flex">
-                          <div className="h-full bg-red-500 transition-all" style={{ width: `${soldCount}%` }}></div>
-                          <div className="h-full bg-yellow-400 transition-all" style={{ width: `${reservedCount}%` }}></div>
+                          <div className="h-full bg-red-500 transition-all" style={{ width: `${soldCount + reservedCount}%` }}></div>
                         </div>
                       </div>
 
@@ -163,7 +150,7 @@ export default async function PublicidadPage() {
                     <div className="inline-block bg-yellow-400 text-yellow-950 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 shadow-lg">
                       ¡Gran Sorteo!
                     </div>
-                    <h2 className="text-2xl font-black leading-tight bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">
+                    <h2 className="text-xl font-black leading-tight bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">
                       {activeRaffle.name}
                     </h2>
                     <div className="text-xl font-bold mt-1 text-white/90">
@@ -173,12 +160,11 @@ export default async function PublicidadPage() {
 
                   <div className="mb-4 bg-white/10 p-3 rounded-2xl backdrop-blur-sm border border-white/10">
                     <div className="flex justify-between text-[10px] font-bold mb-2 uppercase tracking-wide">
-                      <span className="text-green-400">{soldCount} Vendidos</span>
+                      <span className="text-green-400">{soldCount + reservedCount} Vendidos</span>
                       <span className="text-yellow-400">{availableCount} Disponibles</span>
                     </div>
                     <div className="h-2 w-full bg-black/50 rounded-full overflow-hidden flex">
-                      <div className="h-full bg-green-500" style={{ width: `${soldCount}%` }}></div>
-                      <div className="h-full bg-yellow-500" style={{ width: `${reservedCount}%` }}></div>
+                      <div className="h-full bg-green-500" style={{ width: `${soldCount + reservedCount}%` }}></div>
                     </div>
                   </div>
 
@@ -186,19 +172,16 @@ export default async function PublicidadPage() {
                     <div className="grid grid-cols-10 gap-1 p-2 sm:p-3 bg-white/5 rounded-xl backdrop-blur-md border border-white/10">
                       {gridNumbers.map((num) => {
                         const ticket = activeRaffle.tickets.find(t => t.number === num)
-                        let isReserved = false
-                        let isSold = false
+                        let isSoldOrReserved = false
                         if (ticket) {
-                          if (ticket.status === 'SOLD') isSold = true
-                          if (ticket.status === 'RESERVED') isReserved = true
+                          if (ticket.status === 'SOLD' || ticket.status === 'RESERVED') isSoldOrReserved = true
                         }
                         let bgClass = "bg-white/20 text-white"
-                        if (isSold) bgClass = "bg-green-500 text-white font-bold opacity-80"
-                        else if (isReserved) bgClass = "bg-yellow-500 text-white font-bold opacity-80"
+                        if (isSoldOrReserved) bgClass = "bg-green-500 text-white font-bold opacity-80"
 
                         return (
                           <div key={num} className={`aspect-square rounded flex items-center justify-center text-[7px] ${bgClass}`}>
-                            {isSold ? '✓' : isReserved ? '⏳' : num}
+                            {isSoldOrReserved ? '✓' : num}
                           </div>
                         )
                       })}
@@ -305,6 +288,109 @@ export default async function PublicidadPage() {
             </div>
           </div>
 
+        </div>
+
+        {/* Affiliate Recruitment Section */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mt-12">
+          <h2 className="text-xl font-bold mb-2">Recluta Afiliados</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Usa estas imágenes para invitar a otras personas a vender por ti y ganar comisiones.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            
+            {/* Affiliate Promo 1: Dinero Extra */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex justify-center bg-gray-200 p-4 sm:p-6 rounded-3xl overflow-hidden shadow-inner w-full">
+                <div
+                  id="promo-aff-1"
+                  className="bg-gradient-to-br from-emerald-600 via-green-500 to-teal-700 w-full max-w-[320px] aspect-[9/16] rounded-3xl shadow-2xl overflow-hidden flex flex-col relative"
+                >
+                  <div className="absolute inset-0 bg-black/10 mix-blend-multiply"></div>
+                  <div className="relative z-10 flex flex-col h-full p-6 text-white items-center justify-center text-center">
+                    <div className="mb-8">
+                      <div className="bg-white text-emerald-600 font-black px-4 py-1 rounded-full text-sm uppercase tracking-widest shadow-lg inline-block mb-6">Oportunidad</div>
+                      <h2 className="text-4xl font-black leading-tight drop-shadow-md mb-2">
+                        ¿Quieres<br/>ganar dinero<br/>extra?
+                      </h2>
+                    </div>
+                    
+                    <div className="bg-white/20 p-6 rounded-2xl backdrop-blur-sm border border-white/30 w-full my-4">
+                      <div className="text-sm font-bold uppercase tracking-wider mb-2 text-green-100">Gana el</div>
+                      <div className="text-6xl font-black text-white drop-shadow-lg mb-1">{activeRaffle.commissionPct}%</div>
+                      <div className="text-sm font-bold text-green-100 uppercase tracking-widest">De Comisión</div>
+                    </div>
+
+                    <div className="mt-8 text-center">
+                      <p className="text-lg font-bold mb-2">Por cada número que vendas</p>
+                      <p className="text-sm text-green-100 font-medium">Vende desde tu celular sin invertir nada.</p>
+                      <div className="mt-6 bg-black text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-sm shadow-xl inline-block">
+                        ¡Escríbeme!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full text-center">
+                <h3 className="font-bold mb-3 text-gray-800">Gana Dinero</h3>
+                <DownloadButton targetId="promo-aff-1" fileName={`Afiliado-Gana-${activeRaffle.name.replace(/\s+/g, '-')}.png`} />
+              </div>
+            </div>
+
+            {/* Affiliate Promo 2: Equipo */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex justify-center bg-gray-200 p-4 sm:p-6 rounded-3xl overflow-hidden shadow-inner w-full">
+                <div
+                  id="promo-aff-2"
+                  className="bg-white w-full max-w-[320px] aspect-[9/16] rounded-3xl shadow-2xl overflow-hidden flex flex-col relative"
+                >
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-blue-100 rounded-bl-full -mr-10 -mt-10"></div>
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-tr-full mix-blend-multiply opacity-5"></div>
+                  
+                  <div className="relative z-10 flex flex-col h-full p-8 text-gray-800 items-center justify-between text-center">
+                    <div className="mt-4">
+                      <img src="/logo.png" alt="Logo" className="h-12 w-auto object-contain mb-6 mx-auto" crossOrigin="anonymous" />
+                      <h2 className="text-3xl font-black leading-tight text-gray-900">
+                        Únete a<br/><span className="text-blue-600">nuestro<br/>equipo</span>
+                      </h2>
+                    </div>
+
+                    <div className="w-full text-left space-y-4 my-8">
+                      <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">📱</div>
+                        <div className="text-sm font-bold text-gray-700">Vende desde tu WhatsApp</div>
+                      </div>
+                      <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">💸</div>
+                        <div className="text-sm font-bold text-gray-700">Gana {activeRaffle.commissionPct}% de comisión</div>
+                      </div>
+                      <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">🔗</div>
+                        <div className="text-sm font-bold text-gray-700">Tu propio enlace de ventas</div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-3">Requisitos</div>
+                      <div className="flex gap-2 justify-center">
+                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold">Tener WhatsApp</span>
+                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold">Cero Inversión</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-bold uppercase tracking-wider text-sm shadow-lg">
+                      Solicitar Ingreso
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full text-center">
+                <h3 className="font-bold mb-3 text-gray-800">Únete al Equipo</h3>
+                <DownloadButton targetId="promo-aff-2" fileName={`Afiliado-Unete-${activeRaffle.name.replace(/\s+/g, '-')}.png`} />
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </main>

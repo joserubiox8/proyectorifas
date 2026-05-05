@@ -136,7 +136,6 @@ export default async function AffiliateDashboard() {
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="pb-3 text-gray-500 font-medium">Recibo</th>
-                    <th className="pb-3 text-gray-500 font-medium">Fecha</th>
                     <th className="pb-3 text-gray-500 font-medium">Cliente</th>
                     <th className="pb-3 text-gray-500 font-medium">Números</th>
                     <th className="pb-3 text-gray-500 font-medium">Comisión</th>
@@ -152,7 +151,6 @@ export default async function AffiliateDashboard() {
                     return (
                       <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                         <td className="py-3 font-mono font-bold text-gray-800">{order.receiptCode}</td>
-                        <td className="py-3 text-gray-600">{new Date(order.createdAt).toLocaleDateString('es-CO')}</td>
                         <td className="py-3 font-medium text-gray-900">{order.customerName}</td>
                         <td className="py-3">
                           <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-mono">
@@ -190,7 +188,6 @@ export default async function AffiliateDashboard() {
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="pb-3 text-gray-500 font-medium">Recibo</th>
-                    <th className="pb-3 text-gray-500 font-medium">Fecha</th>
                     <th className="pb-3 text-gray-500 font-medium">Cliente</th>
                     <th className="pb-3 text-gray-500 font-medium">WhatsApp</th>
                     <th className="pb-3 text-gray-500 font-medium">Números</th>
@@ -200,7 +197,6 @@ export default async function AffiliateDashboard() {
                   {pendingOrders.map(order => (
                     <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                       <td className="py-3 font-mono font-bold text-gray-800">{order.receiptCode}</td>
-                      <td className="py-3 text-gray-600">{new Date(order.createdAt).toLocaleDateString('es-CO')}</td>
                       <td className="py-3 font-medium text-gray-900">{order.customerName}</td>
                       <td className="py-3">
                         <a href={`https://wa.me/${order.customerPhone}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">

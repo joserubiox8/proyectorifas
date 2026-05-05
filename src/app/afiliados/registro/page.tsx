@@ -129,6 +129,7 @@ export default function AffiliateRegistration() {
                 />
               </div>
             </div>
+            <p className="text-[11px] text-gray-500 mt-1">Cuenta en la que recibirás las comisiones.</p>
 
             <button
               type="submit"

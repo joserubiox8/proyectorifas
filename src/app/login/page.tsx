@@ -28,7 +28,10 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl">
-        <h1 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h1>
+        <div className="text-center mb-6">
+          <img src="/logo.png" alt="Logo" className="h-20 w-auto mx-auto mb-4 object-contain" />
+          <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
+        </div>
         
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm mb-4">

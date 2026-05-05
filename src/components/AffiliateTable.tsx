@@ -25,6 +25,8 @@ type Affiliate = {
   whatsapp: string
   idNumber: string
   refCode: string
+  bank: string
+  account: string
   orders: Order[]
 }
 
@@ -136,6 +138,10 @@ export default function AffiliateTable({ affiliates }: { affiliates: Affiliate[]
                                   </h4>
                                   <div className="space-y-2 text-sm text-gray-600">
                                     <p><strong className="text-gray-900">Enlace de referido:</strong> <code className="bg-gray-100 px-1 py-0.5 rounded text-blue-600 break-all">https://jrifas.com/?ref={aff.refCode}</code></p>
+                                    <p className="flex items-center gap-2">
+                                      <span><strong className="text-gray-900">Banco:</strong> {aff.bank} - <strong className="text-gray-900">Cuenta:</strong> {aff.account}</span>
+                                      <AdminActions action="edit-affiliate-bank" id={aff.id} />
+                                    </p>
                                     <p><strong className="text-gray-900">Total Reservas Pendientes:</strong> {pendingOrders.length}</p>
                                     <p><strong className="text-gray-900">Total Órdenes Aprobadas:</strong> {approvedOrders.length}</p>
                                   </div>

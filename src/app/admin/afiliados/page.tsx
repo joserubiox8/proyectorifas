@@ -35,6 +35,30 @@ export default async function AdminAffiliates() {
     }
   })
 
+  let totalVendidos = 0
+  let totalPagadas = 0
+  let totalPendientes = 0
+
+  for (const aff of affiliates) {
+    for (const order of aff.orders) {
+      if (order.status === 'APPROVED') {
+        const validTickets = order.tickets.filter(t => !activeRaffle || t.raffleId === activeRaffle.id)
+        totalVendidos += validTickets.length
+        
+        let orderCom = 0
+        for (const t of validTickets) {
+          if (t.raffle) orderCom += t.raffle.price * (t.raffle.commissionPct / 100)
+        }
+
+        if (order.commissionPaid) {
+          totalPagadas += orderCom
+        } else {
+          totalPendientes += orderCom
+        }
+      }
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -45,6 +69,28 @@ export default async function AdminAffiliates() {
           <Link href="/admin" className="text-blue-600 hover:text-blue-800 bg-blue-50 px-4 py-2 rounded-lg text-sm font-bold w-full sm:w-auto text-center transition-colors">
             &larr; Volver al Panel
           </Link>
+        </div>
+
+        {/* Resumen General */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Afiliados Totales</div>
+            <div className="text-2xl font-black text-blue-600">{affiliates.length}</div>
+          </div>
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Números Vendidos</div>
+            <div className="text-2xl font-black text-gray-900">{totalVendidos}</div>
+            <div className="text-[10px] text-gray-400 mt-1">Por afiliados (aprobados)</div>
+          </div>
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Comisiones Pagadas</div>
+            <div className="text-2xl font-black text-green-600">${totalPagadas.toLocaleString('es-CO')}</div>
+          </div>
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Saldo Pendiente</div>
+            <div className="text-2xl font-black text-yellow-600">${totalPendientes.toLocaleString('es-CO')}</div>
+            <div className="text-[10px] text-gray-400 mt-1">Por pagar a afiliados</div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

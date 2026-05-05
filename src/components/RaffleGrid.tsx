@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { reserveTickets } from '@/app/actions/reservation'
+import { toggleFakeSold } from '@/app/actions/grid'
 import { useRouter } from 'next/navigation'
 
 type TicketData = {
@@ -13,11 +14,13 @@ type TicketData = {
 export default function RaffleGrid({
   raffleId,
   price,
-  tickets
+  tickets,
+  isAdminView
 }: {
   raffleId: string
   price: number
   tickets: TicketData[]
+  isAdminView?: boolean
 }) {
   const [selected, setSelected] = useState<string[]>([])
   const [name, setName] = useState('')
@@ -29,8 +32,16 @@ export default function RaffleGrid({
   // Generate 00 to 99
   const gridNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'))
 
-  const handleSelect = (num: string, status: string) => {
-    if (status === 'SOLD') return
+  const handleSelect = async (num: string, status: string) => {
+    if (isAdminView) {
+      if (status === 'AVAILABLE' || status === 'LOCKED') {
+        // Toggle locked status
+        await toggleFakeSold(raffleId, num)
+      }
+      return
+    }
+
+    if (status === 'SOLD' || status === 'LOCKED') return
     if (status === 'RESERVED') return
 
     if (selected.includes(num)) {
@@ -92,13 +103,21 @@ export default function RaffleGrid({
             <div className="w-4 h-4 rounded bg-[#E9E5E0] border border-gray-300"></div>
             Disponible
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-yellow-400"></div>
-            Reservado
-          </div>
+          {isAdminView && (
+            <>
+              <div className="flex items-center gap-1.5">
+                <div className="w-4 h-4 rounded bg-yellow-400"></div>
+                Reservado
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-4 h-4 rounded bg-purple-500"></div>
+                Bloqueado
+              </div>
+            </>
+          )}
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded bg-red-500"></div>
-            Comprado
+            {isAdminView ? 'Pagado' : 'Vendido'}
           </div>
         </div>
         <div className="grid grid-cols-10 gap-2 sm:gap-3">
@@ -106,18 +125,22 @@ export default function RaffleGrid({
             const ticket = tickets.find(t => t.number === num)
             let isReserved = false
             let isSold = false
+            let isLocked = false
             let isSelected = selected.includes(num)
 
             if (ticket) {
               if (ticket.status === 'SOLD') isSold = true
               if (ticket.status === 'RESERVED') isReserved = true
+              if (ticket.status === 'LOCKED') isLocked = true
             }
 
             let bgClass = "bg-[#E9E5E0] hover:bg-gray-300 text-gray-800"
-            if (isSold) {
+            if (isSold || (!isAdminView && (isReserved || isLocked))) {
               bgClass = "bg-red-500 text-white cursor-not-allowed relative"
-            } else if (isReserved) {
+            } else if (isAdminView && isReserved) {
               bgClass = "bg-yellow-400 text-yellow-900 cursor-not-allowed"
+            } else if (isAdminView && isLocked) {
+              bgClass = "bg-purple-500 text-white cursor-pointer hover:bg-purple-600 transition-colors"
             } else if (isSelected) {
               bgClass = "bg-blue-600 text-white ring-2 ring-blue-300 shadow-lg scale-110 transition-transform"
             }
@@ -131,9 +154,9 @@ export default function RaffleGrid({
                   transition-all duration-200
                   ${bgClass}
                 `}
-                disabled={isSold || isReserved}
+                disabled={isAdminView ? (isSold || isReserved) : (isSold || isReserved || isLocked)}
               >
-                {isSold && (
+                {(isSold || (!isAdminView && (isReserved || isLocked))) && (
                   <span className="absolute text-4xl text-white/50">&times;</span>
                 )}
                 <span className="relative z-10">{num}</span>
@@ -144,11 +167,12 @@ export default function RaffleGrid({
       </div>
 
       {/* Form */}
-      <div className="w-full md:w-80 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-fit sticky top-4">
-        <h3 className="text-xl font-bold mb-4">Tu Reserva</h3>
+      {!isAdminView && (
+        <div className="w-full md:w-80 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-fit sticky top-4">
+          <h3 className="text-xl font-bold mb-4">Tu Reserva</h3>
 
-        <div className="mb-6">
-          <p className="text-sm text-gray-500 mb-2">Números seleccionados:</p>
+          <div className="mb-6">
+            <p className="text-sm text-gray-500 mb-2">Números seleccionados:</p>
           <div className="flex flex-wrap gap-2 mb-2">
             {selected.length === 0 ? (
               <span className="text-gray-400 italic">Ninguno</span>
@@ -212,7 +236,8 @@ export default function RaffleGrid({
             Tus números quedarán reservados hasta que confirmemos tu pago.
           </p>
         </form>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

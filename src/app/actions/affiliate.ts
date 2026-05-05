@@ -49,3 +49,17 @@ export async function toggleCommissionPaid(orderId: string, isPaid: boolean) {
     return { success: false, error: 'Error al actualizar el estado de la comisión.' }
   }
 }
+
+export async function updateAffiliateBank(id: string, bank: string, account: string) {
+  try {
+    await prisma.affiliate.update({
+      where: { id },
+      data: { bank, account }
+    })
+    revalidatePath('/admin/afiliados')
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating affiliate bank:', error)
+    return { success: false, error: 'Error al actualizar los datos bancarios del afiliado.' }
+  }
+}

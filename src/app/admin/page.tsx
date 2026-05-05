@@ -62,7 +62,7 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
             </form>
           </div>
           
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
             <Link href="/admin/afiliados" className="flex flex-col items-center justify-center p-3 sm:p-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-colors border border-blue-100 text-center gap-1">
               <span className="text-xl sm:text-2xl">👥</span>
               <span className="text-[10px] sm:text-sm font-bold leading-tight">Afiliados</span>
@@ -74,6 +74,10 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
             <Link href="/admin/publicidad" className="flex flex-col items-center justify-center p-3 sm:p-4 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl transition-colors border border-purple-100 text-center gap-1">
               <span className="text-xl sm:text-2xl">📸</span>
               <span className="text-[10px] sm:text-sm font-bold leading-tight">Publicidad</span>
+            </Link>
+            <Link href="/admin/grilla" className="flex flex-col items-center justify-center p-3 sm:p-4 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-xl transition-colors border border-orange-100 text-center gap-1">
+              <span className="text-xl sm:text-2xl">🔢</span>
+              <span className="text-[10px] sm:text-sm font-bold leading-tight">Grilla Real</span>
             </Link>
           </div>
         </div>
