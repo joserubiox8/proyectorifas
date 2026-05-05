@@ -60,9 +60,10 @@ export async function deleteRaffle(id: string) {
     // 1. Encontrar todas las órdenes/recibos asociados a esta rifa
     const ordersToDelete = await prisma.order.findMany({
       where: {
-        tickets: {
-          some: { raffleId: id }
-        }
+        OR: [
+          { tickets: { some: { raffleId: id } } },
+          { tickets: { none: {} } }
+        ]
       },
       select: { id: true }
     })

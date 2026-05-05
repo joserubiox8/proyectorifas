@@ -5,7 +5,7 @@ import { approveOrder, cancelOrder, toggleContacted } from '@/app/actions/approv
 import { createRaffle, deleteRaffle, updateRaffleName, updateRaffleDrawDate } from '@/app/actions/raffle'
 import { createAffiliate, deleteAffiliate, toggleCommissionPaid, updateAffiliateBank } from '@/app/actions/affiliate'
 
-export default function AdminActions({ action, id, isPaid, isContacted }: { action: string, id?: string, isPaid?: boolean, isContacted?: boolean }) {
+export default function AdminActions({ action, id, isPaid, isContacted, initialName }: { action: string, id?: string, isPaid?: boolean, isContacted?: boolean, initialName?: string }) {
   const [loading, setLoading] = useState(false)
 
   const handleApprove = async () => {
@@ -47,23 +47,30 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
     setLoading(false)
   }
 
-  const handleCreate = async () => {
-    const name = prompt('Nombre de la Rifa (ej. Rifa Semanal 1):')
-    if (!name) return
-    const priceStr = prompt('Precio de cada número (COP):', '50000')
-    if (!priceStr) return
-    const commStr = prompt('Porcentaje de comisión (%):', '20')
-    if (!commStr) return
-    const drawDateStr = prompt('Fecha del sorteo (Opcional, ej. Sábado 25 de Octubre):', '')
+  const [createRaffleName, setCreateRaffleName] = useState('')
+  const [createRafflePrice, setCreateRafflePrice] = useState('50000')
+  const [createRaffleComm, setCreateRaffleComm] = useState('20')
+  const [createRaffleDate, setCreateRaffleDate] = useState('')
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!createRaffleName || !createRafflePrice || !createRaffleComm) return
 
     setLoading(true)
     const res = await createRaffle({
-      name,
-      price: parseInt(priceStr, 10),
-      commissionPct: parseInt(commStr, 10),
-      drawDate: drawDateStr || undefined
+      name: createRaffleName,
+      price: parseInt(createRafflePrice, 10),
+      commissionPct: parseInt(createRaffleComm, 10),
+      drawDate: createRaffleDate.trim() || undefined
     })
-    if (!res.success) alert(res.error)
+    if (!res.success) {
+      alert(res.error)
+    } else {
+      setCreateRaffleName('')
+      setCreateRafflePrice('50000')
+      setCreateRaffleComm('20')
+      setCreateRaffleDate('')
+    }
     setLoading(false)
   }
 
@@ -75,13 +82,16 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
     setLoading(false)
   }
 
-  const handleEditRaffleName = async () => {
-    if (!id) return
-    const newName = prompt('Ingresa el nuevo nombre para la rifa:')
-    if (!newName) return
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editName, setEditName] = useState(initialName || '')
+
+  const handleEditRaffleName = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!id || !editName) return
     setLoading(true)
-    const res = await updateRaffleName(id, newName)
+    const res = await updateRaffleName(id, editName)
     if (!res.success) alert(res.error)
+    else setIsEditingName(false)
     setLoading(false)
   }
 
@@ -170,13 +180,56 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
 
   if (action === 'create-raffle') {
     return (
-      <button
-        onClick={handleCreate}
-        disabled={loading}
-        className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-bold transition-colors shadow-lg"
-      >
-        {loading ? 'Creando...' : 'Crear Nueva Rifa'}
-      </button>
+      <form onSubmit={handleCreate} className="space-y-4 w-full">
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">Nombre de la Rifa</label>
+          <textarea
+            placeholder="Ej. Gran Rifa Especial&#10;Gana un iPhone 15"
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-black min-h-[80px]"
+            value={createRaffleName}
+            onChange={e => setCreateRaffleName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-1">Precio (COP)</label>
+            <input
+              type="number"
+              className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-black"
+              value={createRafflePrice}
+              onChange={e => setCreateRafflePrice(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-1">Comisión (%)</label>
+            <input
+              type="number"
+              className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-black"
+              value={createRaffleComm}
+              onChange={e => setCreateRaffleComm(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">Fecha del sorteo (Opcional)</label>
+          <input
+            placeholder="Ej. Sábado 25 de Octubre"
+            className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-black"
+            value={createRaffleDate}
+            onChange={e => setCreateRaffleDate(e.target.value)}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-bold transition-colors shadow-lg disabled:opacity-50"
+        >
+          {loading ? 'Creando...' : 'Crear Rifa'}
+        </button>
+      </form>
     )
   }
 
@@ -206,10 +259,31 @@ export default function AdminActions({ action, id, isPaid, isContacted }: { acti
   }
 
   if (action === 'edit-raffle-name') {
+    if (isEditingName) {
+      return (
+        <form onSubmit={handleEditRaffleName} className="mt-2 flex flex-col gap-2 w-full max-w-sm">
+          <textarea
+            className="w-full p-2 text-sm border rounded-lg outline-none focus:ring-2 focus:ring-black font-normal"
+            value={editName}
+            onChange={e => setEditName(e.target.value)}
+            required
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <button type="submit" disabled={loading} className="bg-black text-white px-3 py-1.5 rounded-lg text-sm font-bold">
+              {loading ? '...' : 'Guardar'}
+            </button>
+            <button type="button" disabled={loading} onClick={() => setIsEditingName(false)} className="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-bold">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      )
+    }
+
     return (
       <button
-        onClick={handleEditRaffleName}
-        disabled={loading}
+        onClick={() => setIsEditingName(true)}
         className="text-gray-400 hover:text-gray-800 transition-colors ml-2"
         title="Editar nombre"
       >

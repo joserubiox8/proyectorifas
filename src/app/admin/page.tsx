@@ -87,9 +87,9 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ q
           {activeRaffle ? (
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl font-bold flex items-center">
-                  Rifa Activa: {activeRaffle.name}
-                  <AdminActions action="edit-raffle-name" id={activeRaffle.id} />
+                <h2 className="text-xl font-bold flex flex-col md:flex-row md:items-start gap-2">
+                  <span>Rifa Activa: {activeRaffle.name}</span>
+                  <AdminActions action="edit-raffle-name" id={activeRaffle.id} initialName={activeRaffle.name} />
                 </h2>
                 <p className="text-gray-500">Precio: {activeRaffle.price.toLocaleString()} | Comisión: {activeRaffle.commissionPct}%</p>
                 <p className="text-gray-500 flex items-center gap-1 mt-0.5">
