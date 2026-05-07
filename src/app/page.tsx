@@ -23,7 +23,7 @@ export default async function Home() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <img src="/logo.png" alt="Logo de la Rifa" className="h-24 md:h-32 w-auto mx-auto mb-6 object-contain" />
-          <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-gray-900">
+          <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-gray-900 whitespace-pre-line">
             {raffle.name}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
