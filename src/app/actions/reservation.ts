@@ -105,30 +105,44 @@ export async function reserveTickets(data: {
 
         const existing = existingTickets.find((t) => t.number === num)
         if (existing) {
-          await tx.ticket.update({
-            where: { id: existing.id },
+          const updateResult = await tx.ticket.updateMany({
+            where: { id: existing.id, status: 'AVAILABLE' },
             data: {
               status: 'RESERVED',
               expiresAt,
               orderId: order.id,
-              secondaries: {
-                create: pool.map(p => ({ number: p.number }))
-              }
             }
           })
+
+          if (updateResult.count === 0) {
+            throw new Error(`El número ${num} acaba de ser reservado por alguien más.`)
+          }
+
+          // Create secondaries since updateMany doesn't support nested creates
+          await tx.secondaryTicket.createMany({
+            data: pool.map(p => ({ number: p.number, ticketId: existing.id }))
+          })
+
         } else {
-          await tx.ticket.create({
-            data: {
-              number: num,
-              status: 'RESERVED',
-              expiresAt,
-              raffleId: data.raffleId,
-              orderId: order.id,
-              secondaries: {
-                create: pool.map(p => ({ number: p.number }))
+          try {
+            await tx.ticket.create({
+              data: {
+                number: num,
+                status: 'RESERVED',
+                expiresAt,
+                raffleId: data.raffleId,
+                orderId: order.id,
+                secondaries: {
+                  create: pool.map(p => ({ number: p.number }))
+                }
               }
+            })
+          } catch (e: any) {
+            if (e.code === 'P2002') {
+              throw new Error(`El número ${num} acaba de ser reservado por alguien más.`)
             }
-          })
+            throw e
+          }
         }
       }
 

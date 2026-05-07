@@ -15,7 +15,8 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
     include: {
       tickets: {
         include: { secondaries: true }
-      }
+      },
+      affiliate: true
     }
   })
 
@@ -103,7 +104,7 @@ export default async function OrderPage(props: { params: Promise<{ id: string }>
           )}
 
           <div className="mt-2 text-center">
-            <Link href="/" className="text-gray-500 hover:text-gray-800 text-sm font-medium">
+            <Link href={order.affiliate?.refCode ? `/?ref=${order.affiliate.refCode}` : '/'} className="text-gray-500 hover:text-gray-800 text-sm font-medium">
               Volver al inicio
             </Link>
           </div>

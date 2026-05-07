@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { reserveTickets } from '@/app/actions/reservation'
 import { toggleFakeSold } from '@/app/actions/grid'
 import { useRouter } from 'next/navigation'
@@ -28,6 +28,14 @@ export default function RaffleGrid({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const ref = urlParams.get('ref')
+    if (ref) {
+      localStorage.setItem('affiliate_ref', ref)
+    }
+  }, [])
 
   // Generate 00 to 99
   const gridNumbers = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'))
@@ -70,16 +78,19 @@ export default function RaffleGrid({
     setLoading(true)
     setError('')
 
-    // Check for refCode in URL
+    // Check for refCode in URL or localStorage
     const urlParams = new URLSearchParams(window.location.search)
-    const ref = urlParams.get('ref') || undefined
+    let ref = urlParams.get('ref')
+    if (!ref) {
+      ref = localStorage.getItem('affiliate_ref')
+    }
 
     const res = await reserveTickets({
       raffleId,
       numbers: selected,
       customerName: name,
       customerPhone: phone,
-      affiliateRefCode: ref
+      affiliateRefCode: ref || undefined
     })
 
     if (res.success && res.order) {
